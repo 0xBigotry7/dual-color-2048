@@ -1,787 +1,787 @@
-console.log('script.js file loaded'); // Check if the script file itself is loaded
+console.log('script.js loaded');
 
 document.addEventListener('DOMContentLoaded', () => {
-    console.log('DOMContentLoaded event fired'); // Check if the main event listener is working
-
+    console.log('Game initializing...');
+    
+    // DOM Elements
     const boardElement = document.getElementById('game-board');
     const scoreElement = document.getElementById('score');
     const comboMultiplierElement = document.getElementById('combo-multiplier');
-    const movesLeftElement = document.getElementById('moves-left'); // Placeholder
+    const movesLeftElement = document.getElementById('moves-left');
     const changeRowBtn = document.getElementById('change-row-btn');
     const changeColBtn = document.getElementById('change-col-btn');
     const gameOverMessageElement = document.getElementById('game-over-message');
     const finalScoreElement = document.getElementById('final-score');
     const restartButton = document.getElementById('restart-button');
+    const modal = document.getElementById('instructions-modal');
+    const infoBtn = document.getElementById('info-btn');
+    const closeBtn = document.querySelector('.close-button');
 
-    const gridSize = 6;
-    let board = []; // 2D array representing the grid
-    let score = 0;
-    let comboMultiplier = 1;
-    let colorChangeMoves = 5; // Example starting value
-    let isGameOver = false;
-
+    // Game Constants
+    const GRID_SIZE = 6;
     const TILE_COLORS = ['red', 'blue'];
     const SPECIAL_TILES = {
-        WILDCARD: 'wildcard', // Can merge with any color
-        CONVERTER: 'converter' // Changes adjacent colors on merge
-        // RAINBOW: 'rainbow' // Merges with any color/adjacent value (Future)
+        WILDCARD: 'wildcard',
+        CONVERTER: 'converter'
     };
-
-    // Language functionality
-    let currentLanguage = 'en';
-
-    function toggleLanguage() {
-        // Toggle between languages
-        currentLanguage = currentLanguage === 'en' ? 'zh' : 'en';
+    const COLOR_CHANGE_MOVES = 5;
+    
+    // Game State
+    let board = [];           // 2D array representing the grid
+    let score = 0;            // Current score
+    let comboMultiplier = 1;  // Current combo multiplier
+    let colorChangeMoves = COLOR_CHANGE_MOVES; // Remaining color change moves
+    let isGameOver = false;   // Game over flag
+    let currentLanguage = 'en'; // Current language
+    let tileIdCounter = 0;    // Counter for generating unique tile IDs
+    
+    // ============================
+    // Initialization Functions
+    // ============================
+    
+    function initGame() {
+        console.log('Initializing game');
+        // Reset game state
+        score = 0;
+        comboMultiplier = 1;
+        colorChangeMoves = COLOR_CHANGE_MOVES;
+        isGameOver = false;
         
-        // Update the button text
-        document.getElementById('language-toggle').textContent = currentLanguage === 'en' ? 'EN' : '中';
+        // Reset UI
+        scoreElement.textContent = '0';
+        comboMultiplierElement.textContent = '1';
+        movesLeftElement.textContent = colorChangeMoves;
+        gameOverMessageElement.style.display = 'none';
         
-        // Update all text elements
-        const elements = document.querySelectorAll('[data-lang]');
-        elements.forEach(element => {
-            if (element.getAttribute('data-lang') === currentLanguage) {
-                element.style.display = '';
-            } else {
-                element.style.display = 'none';
-            }
-        });
+        // Initialize the board
+        initBoard();
+        
+        // Add initial tiles (4 for 6x6 board)
+        for (let i = 0; i < 4; i++) {
+            addRandomTile();
+        }
+        
+        // Update the board visuals
+        updateBoardVisuals();
     }
-
-    // --- Initialization ---
+    
     function initBoard() {
-        board = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null));
-        // Clear existing tiles from boardElement
+        // Create a new empty board
+        board = Array(GRID_SIZE).fill(null).map(() => Array(GRID_SIZE).fill(null));
+        
+        // Clear the board element
         boardElement.innerHTML = '';
-        // Create visual grid cells
-        for (let r = 0; r < gridSize; r++) {
-            for (let c = 0; c < gridSize; c++) {
+        
+        // Create grid cells
+        for (let r = 0; r < GRID_SIZE; r++) {
+            for (let c = 0; c < GRID_SIZE; c++) {
                 const cell = document.createElement('div');
                 cell.classList.add('grid-cell');
                 boardElement.appendChild(cell);
             }
         }
     }
-
-    function getRandomColor() {
-        return TILE_COLORS[Math.floor(Math.random() * TILE_COLORS.length)];
+    
+    // ============================
+    // Tile Management Functions
+    // ============================
+    
+    function createTile(row, col, value, color, special = null) {
+        const id = generateTileId();
+        return { row, col, value, color, special, id, merged: false };
     }
-
+    
+    function generateTileId() {
+        return tileIdCounter++;
+    }
+    
     function addRandomTile() {
-        let emptyCells = [];
-        for (let r = 0; r < gridSize; r++) {
-            for (let c = 0; c < gridSize; c++) {
+        // Find all empty cells
+        const emptyCells = [];
+        for (let r = 0; r < GRID_SIZE; r++) {
+            for (let c = 0; c < GRID_SIZE; c++) {
                 if (!board[r][c]) {
                     emptyCells.push({ r, c });
                 }
             }
         }
-
-        if (emptyCells.length > 0) {
-            const { r, c } = emptyCells[Math.floor(Math.random() * emptyCells.length)];
-            const value = Math.random() < 0.9 ? 2 : 4; // 90% chance of 2, 10% chance of 4
-            const color = getRandomColor();
-            let special = null;
-
-            // --- Add chance for special tiles ---
-            const randSpecial = Math.random();
-            const wildcardChance = 0.03; // 3% chance for a wildcard
-            const converterChance = 0.05; // 5% chance for a converter (adjust as needed)
-
-            if (randSpecial < wildcardChance) {
-                special = SPECIAL_TILES.WILDCARD;
-                // Wildcards usually start at a base value, like 2 or 4
-            } else if (randSpecial < wildcardChance + converterChance) {
-                special = SPECIAL_TILES.CONVERTER;
-                 // Converters also need a base value
-            }
-            // -------------------------------------
-
-            board[r][c] = { value, color, special, id: generateTileId(), r, c, merged: false }; // Add initial r, c and special type
-            createTileElement(board[r][c]);
+        
+        // If there are no empty cells, return
+        if (emptyCells.length === 0) return false;
+        
+        // Pick a random empty cell
+        const { r, c } = emptyCells[Math.floor(Math.random() * emptyCells.length)];
+        
+        // Determine the tile properties
+        const value = Math.random() < 0.9 ? 2 : 4;
+        const color = TILE_COLORS[Math.floor(Math.random() * TILE_COLORS.length)];
+        let special = null;
+        
+        // Small chance for special tiles
+        const specialRand = Math.random();
+        if (specialRand < 0.03) {
+            special = SPECIAL_TILES.WILDCARD;
+        } else if (specialRand < 0.08) {
+            special = SPECIAL_TILES.CONVERTER;
         }
+        
+        // Create the tile and add it to the board
+        board[r][c] = createTile(r, c, value, color, special);
+        
+        // Create the tile element
+        createTileElement(board[r][c]);
+        
+        return true;
     }
-
-    let tileIdCounter = 0;
-    function generateTileId() {
-        return tileIdCounter++;
-    }
-
-    function createTileElement(tileData) {
+    
+    function createTileElement(tile) {
         const tileElement = document.createElement('div');
-        tileElement.classList.add('tile', `color-${tileData.color}`);
-        tileElement.dataset.value = tileData.value;
-        tileElement.dataset.id = tileData.id;
-        tileElement.textContent = tileData.value; // Display value initially
-        // Add special tile class if applicable
-        if (tileData.special) {
-             tileElement.classList.add(tileData.special);
-             if (tileData.special === SPECIAL_TILES.WILDCARD) {
-                 tileElement.textContent = '★'; // Display star for wildcard
-             }
-        }
-
-        // Position the tile based on its r, c
-        positionTile(tileElement, tileData.r, tileData.c);
-        boardElement.appendChild(tileElement);
-        // Add animation class for appearance
-        tileElement.style.transform = 'scale(0)';
-        requestAnimationFrame(() => {
-             requestAnimationFrame(() => { // Double rAF for better browser rendering
-                tileElement.style.transform = 'scale(1)';
-             });
-        });
-
-    }
-
-     function positionTile(tileElement, r, c) {
-         // Get board dimensions dynamically
-         const boardRect = boardElement.getBoundingClientRect();
-         
-         // Calculate the cell dimensions - make this exact and without rounding
-         const cellWidth = boardRect.width / gridSize;
-         const cellHeight = boardRect.height / gridSize;
-         
-         // Use exact percentage-based positions to prevent grid shifting
-         const top = (r * (100 / gridSize)) + '%';
-         const left = (c * (100 / gridSize)) + '%';
-         
-         // Size based on cell dimensions with small reduction for spacing
-         const tileSize = Math.min(cellWidth, cellHeight) * 0.9;
-         
-         // Set the tile size directly
-         tileElement.style.width = `${tileSize}px`;
-         tileElement.style.height = `${tileSize}px`;
-         
-         // Position the tile with percentage positioning for stability
-         tileElement.style.top = top;
-         tileElement.style.left = left;
-         
-         // Adjust font size based on the tile size
-         const isMobile = window.innerWidth <= 500;
-         const isVerySmall = window.innerWidth <= 350;
-         
-         let fontSizeMultiplier;
-         if (isVerySmall) {
-             fontSizeMultiplier = 0.35; // Smaller font for very small screens
-         } else if (isMobile) {
-             fontSizeMultiplier = 0.38; // Slightly larger for mobile
-         } else {
-             fontSizeMultiplier = 0.4; // Normal size for desktop
-         }
-         
-         const fontSize = tileSize * fontSizeMultiplier;
-         const maxFontSize = isVerySmall ? 20 : (isMobile ? 22 : 26);
-         tileElement.style.fontSize = `${Math.min(fontSize, maxFontSize)}px`;
-     }
-
-    // --- Game State Updates ---
-    function updateScore(newPoints) {
-        score += newPoints * comboMultiplier;
-        scoreElement.textContent = score;
-    }
-
-    function updateCombo(reset = false) {
-        if (reset) {
-            comboMultiplier = 1;
+        tileElement.classList.add('tile', `color-${tile.color}`);
+        tileElement.dataset.value = tile.value;
+        tileElement.dataset.id = tile.id;
+        
+        // Set the text content based on special status
+        if (tile.special === SPECIAL_TILES.WILDCARD) {
+            tileElement.textContent = '★';
+            tileElement.classList.add(SPECIAL_TILES.WILDCARD);
+        } else if (tile.special === SPECIAL_TILES.CONVERTER) {
+            tileElement.textContent = tile.value;
+            tileElement.classList.add(SPECIAL_TILES.CONVERTER);
         } else {
-            comboMultiplier++;
+            tileElement.textContent = tile.value;
         }
-        comboMultiplierElement.textContent = `${comboMultiplier}x`;
+        
+        // Position the tile
+        positionTile(tileElement, tile.row, tile.col);
+        
+        // Add to the board
+        boardElement.appendChild(tileElement);
+        
+        // Add appear animation
+        requestAnimationFrame(() => {
+            tileElement.style.transform = 'scale(1)';
+            tileElement.style.opacity = '1';
+        });
     }
-
-    function updateMovesLeft() {
-        movesLeftElement.textContent = colorChangeMoves;
+    
+    function positionTile(tileElement, row, col) {
+        // Use percentage-based positioning for stability
+        tileElement.style.top = `${row * (100 / GRID_SIZE)}%`;
+        tileElement.style.left = `${col * (100 / GRID_SIZE)}%`;
+        tileElement.style.width = `${(100 / GRID_SIZE) * 0.9}%`;
+        tileElement.style.height = `${(100 / GRID_SIZE) * 0.9}%`;
+        
+        // Adaptive font sizing based on tile value
+        updateTileFontSize(tileElement);
     }
-
-    // --- Game Logic ---
-    function move(direction) {
-        if (isGameOver) return;
-        // console.log(`Move: ${direction}`); // Keep for debugging if needed
-
+    
+    function updateTileFontSize(tileElement) {
+        const value = parseInt(tileElement.dataset.value);
+        const isMobile = window.innerWidth <= 500;
+        const isVerySmall = window.innerWidth <= 350;
+        
+        let fontSize;
+        
+        if (value >= 1024) {
+            fontSize = isVerySmall ? '12px' : (isMobile ? '14px' : '16px');
+        } else if (value >= 128) {
+            fontSize = isVerySmall ? '14px' : (isMobile ? '16px' : '20px');
+        } else if (value >= 16) {
+            fontSize = isVerySmall ? '16px' : (isMobile ? '20px' : '22px');
+        } else {
+            fontSize = isVerySmall ? '18px' : (isMobile ? '22px' : '24px');
+        }
+        
+        tileElement.style.fontSize = fontSize;
+    }
+    
+    // ============================
+    // Game Logic
+    // ============================
+    
+    function moveTiles(direction) {
+        if (isGameOver) return false;
+        
+        // Keep track of whether the board changed
         let boardChanged = false;
-        let currentMoveMerged = false; // Track if any merge happened in this move
-
-        // Create a deep copy of the board to compare later to see if anything changed
-        // const boardBeforeMove = JSON.parse(JSON.stringify(board)); // Simple deep copy for this structure
-
-        // Define traversal order based on direction
-        const traversals = buildTraversals(direction);
-
-        // Clear merged flags from previous turn
-         for (let r = 0; r < gridSize; r++) {
-             for (let c = 0; c < gridSize; c++) {
-                 if (board[r][c]) {
-                     board[r][c].merged = false; // Flag to prevent double merging
-                 }
-             }
-         }
-
-        // Iterate through rows/columns based on traversal order
-        traversals.rows.forEach(r => {
-            traversals.cols.forEach(c => {
-                const currentTile = board[r][c];
-                if (currentTile) {
-                    // Find the furthest position the tile can slide to
-                    const farthestPosition = findFarthestPosition(r, c, direction);
-                    const nextPos = farthestPosition.next; // The cell where the tile will stop or merge
-                    const currentPos = { r: r, c: c };
-
-                    // Check if nextPos is valid (not out of bounds) 
-                    const hasValidNextPos = isWithinBounds(nextPos.r, nextPos.c);
+        let hasMerged = false;
+        
+        // Clear merged flags
+        for (let r = 0; r < GRID_SIZE; r++) {
+            for (let c = 0; c < GRID_SIZE; c++) {
+                if (board[r][c]) {
+                    board[r][c].merged = false;
+                }
+            }
+        }
+        
+        // Determine traversal order
+        const traversals = getTraversalOrder(direction);
+        
+        // Process each tile
+        traversals.row.forEach(r => {
+            traversals.col.forEach(c => {
+                const tile = board[r][c];
+                
+                if (tile) {
+                    // Find the farthest position and next tile (for potential merge)
+                    const { farthest, next } = findFarthestPosition(r, c, direction);
                     
-                    // Only check for merge if the next position is valid
-                    const tileAtNextPos = hasValidNextPos ? board[nextPos.r][nextPos.c] : null;
-
-                    if (hasValidNextPos && tileAtNextPos && !tileAtNextPos.merged && !currentTile.merged && canMerge(currentTile, tileAtNextPos)) {
-                        // --- Merge Occurs ---
-                        const mergedValue = currentTile.value * 2;
-                        const mergedColor = determineMergedColor(currentTile, tileAtNextPos, mergedValue);
-                        const wasConverter = currentTile.special === SPECIAL_TILES.CONVERTER || tileAtNextPos.special === SPECIAL_TILES.CONVERTER;
-
-                        // Update the tile at the merge destination
-                        tileAtNextPos.value = mergedValue;
-                        tileAtNextPos.color = mergedColor;
-                        tileAtNextPos.merged = true; // Mark as merged for this turn
-                        tileAtNextPos.special = determineSpecialStatusAfterMerge(currentTile, tileAtNextPos, mergedValue); // Handle potential special changes
-
-                        // Remove the original tile that moved and merged
-                        board[currentPos.r][currentPos.c] = null;
-
-                        // Update score & combo
-                        updateScore(mergedValue);
-                        updateCombo(); // Increment combo
-                        currentMoveMerged = true;
+                    if (!farthest) return; // Skip if no valid position
+                    
+                    const isMoved = farthest.r !== r || farthest.c !== c;
+                    
+                    // Check if we can merge with the next tile
+                    if (next && canMerge(tile, board[next.r][next.c])) {
+                        // Perform merge
                         boardChanged = true;
-
-                        // Handle Converter Tile Effect (If the merge involved a converter)
-                        if (wasConverter) {
-                             // Apply effect *after* the board state is updated but before visuals
-                             applyConverterEffect(nextPos.r, nextPos.c);
-                        }
-
-                    } else if (farthestPosition.farthest.r !== currentPos.r || farthestPosition.farthest.c !== currentPos.c) {
-                        // --- Slide Occurs (No Merge) ---
-                         const targetPos = farthestPosition.farthest;
-                        // Move tile in the board array
-                        board[targetPos.r][targetPos.c] = currentTile;
-                        board[currentPos.r][currentPos.c] = null;
-
-                        // Update tile's internal position tracking
-                        currentTile.r = targetPos.r;
-                        currentTile.c = targetPos.c;
-
+                        hasMerged = true;
+                        mergeTiles(tile, board[next.r][next.c]);
+                    } else if (isMoved) {
+                        // Just move the tile (no merge)
                         boardChanged = true;
+                        moveTile(tile, farthest.r, farthest.c);
                     }
                 }
             });
         });
-
+        
+        // Update game state based on the move
         if (boardChanged) {
-            updateBoardVisuals(); // Update visuals after processing all tiles for the move
-            // Wait for animations to roughly finish before adding new tile & checking game over
+            // Update combo multiplier
+            if (hasMerged) {
+                updateCombo();
+            } else {
+                resetCombo();
+            }
+            
+            // Add a new random tile
             setTimeout(() => {
                 addRandomTile();
-                 if (checkGameOver()) {
+                
+                // Check for game over
+                if (isGameBlocked()) {
                     endGame();
                 }
-                // If merge happened, combo already incremented. If only slide, reset combo.
-                 if (!currentMoveMerged) {
-                     updateCombo(true); // Reset combo if only sliding occurred
-                 }
-            }, 100); // Match transition time in CSS roughly
-        } else {
-             updateCombo(true); // Reset combo if nothing moved
+            }, 150);
+            
+            // Update the board visuals
+            updateBoardVisuals();
         }
+        
+        return boardChanged;
     }
-
-    function buildTraversals(direction) {
-        const traversals = { rows: [], cols: [] };
-        for (let i = 0; i < gridSize; i++) {
-            traversals.rows.push(i);
-            traversals.cols.push(i);
-        }
-
-        // Reverse traversal order for 'right' and 'down' moves
-        if (direction === 'right') traversals.cols.reverse();
-        if (direction === 'down') traversals.rows.reverse();
-
-        return traversals;
-    }
-
-    function findFarthestPosition(r, c, direction) {
-        let currentR = r;
-        let currentC = c;
-        let nextR, nextC;
-
-        do {
-            nextR = currentR;
-            nextC = currentC;
-            switch (direction) {
-                case 'up':    nextR--; break;
-                case 'down':  nextR++; break;
-                case 'left':  nextC--; break;
-                case 'right': nextC++; break;
-            }
-            // Check if the next position is within bounds and empty
-            if (isWithinBounds(nextR, nextC) && !board[nextR][nextC]) {
-                currentR = nextR;
-                currentC = nextC;
-            } else {
-                break; // Stop if out of bounds or cell is occupied
-            }
-        } while (true);
-
-        // 'next' is the position right after the farthest empty cell (potential merge target)
-        let mergeTargetR = currentR;
-        let mergeTargetC = currentC;
-        switch (direction) {
-            case 'up':    mergeTargetR--; break;
-            case 'down':  mergeTargetR++; break;
-            case 'left':  mergeTargetC--; break;
-            case 'right': mergeTargetC++; break;
-        }
-
-        // Make sure the merge target is within bounds
-        const isNextInBounds = isWithinBounds(mergeTargetR, mergeTargetC);
-
-        return {
-            farthest: { r: currentR, c: currentC }, // Furthest empty cell the tile can move to
-            next: isNextInBounds ? { r: mergeTargetR, c: mergeTargetC } : { r: -1, c: -1 } // If out of bounds, use invalid coords
+    
+    function getTraversalOrder(direction) {
+        const traversal = {
+            row: Array.from({ length: GRID_SIZE }, (_, i) => i),
+            col: Array.from({ length: GRID_SIZE }, (_, i) => i)
         };
+        
+        // Reverse traversal order for right and down moves
+        if (direction === 'right') traversal.col.reverse();
+        if (direction === 'down') traversal.row.reverse();
+        
+        return traversal;
     }
-
-     function determineMergedColor(tile1, tile2, mergedValue) {
-         const isWildcard1 = tile1.special === SPECIAL_TILES.WILDCARD;
-         const isWildcard2 = tile2.special === SPECIAL_TILES.WILDCARD;
-
-         let finalColor;
-
-         if (isWildcard1 && isWildcard2) {
-             // If both are wildcards, maybe default to one color or alternate? Let's pick one (e.g., tile2's original color if it had one, or random)
-             finalColor = tile2.color || getRandomColor(); // Or tile1.color, doesn't matter much
-         } else if (isWildcard1) {
-             finalColor = tile2.color; // Takes color of the non-wildcard
-         } else if (isWildcard2) {
-             finalColor = tile1.color; // Takes color of the non-wildcard
-         } else {
-             finalColor = tile1.color; // Standard merge, color remains the same
-         }
-
-         // Special Rule: 32 and 256 merges change color
-         if (mergedValue === 32 || mergedValue === 256) {
-             finalColor = (finalColor === 'red') ? 'blue' : 'red';
-         }
-
-         return finalColor;
-     }
-
-    function determineSpecialStatusAfterMerge(tile1, tile2, mergedValue) {
-        // If either merging tile was special, does the result retain/gain special status?
-        // Current logic: Special status is lost on merge unless defined otherwise.
-        // Wildcards become normal tiles of the determined color.
-        // Converters become normal tiles (effect applied during merge).
-        // Future: Could introduce rules like "merging two converters creates a higher-value converter".
-        return null; // Default: merged tile is not special
+    
+    function findFarthestPosition(row, col, direction) {
+        let farthest = { r: row, c: col };
+        let next = null;
+        
+        // Calculate direction deltas
+        const delta = {
+            'up': { r: -1, c: 0 },
+            'right': { r: 0, c: 1 },
+            'down': { r: 1, c: 0 },
+            'left': { r: 0, c: -1 }
+        }[direction];
+        
+        // Find the farthest empty position
+        let r = row + delta.r;
+        let c = col + delta.c;
+        
+        while (isValidPosition(r, c)) {
+            if (!board[r][c]) {
+                // Update farthest if the cell is empty
+                farthest = { r, c };
+                r += delta.r;
+                c += delta.c;
+            } else {
+                // Cell is occupied - this could be a merge candidate
+                next = { r, c };
+                break;
+            }
+        }
+        
+        return { farthest, next };
     }
-
-    function isWithinBounds(r, c) {
-        return r >= 0 && r < gridSize && c >= 0 && c < gridSize;
+    
+    function isValidPosition(r, c) {
+        return r >= 0 && r < GRID_SIZE && c >= 0 && c < GRID_SIZE;
     }
-
-    // --- Add Converter Effect Logic ---
-    function applyConverterEffect(mergedRow, mergedCol) {
-        console.log(`Applying converter effect around ${mergedRow}, ${mergedCol}`);
-        const deltas = [
-            { dr: -1, dc: 0 }, // Up
-            { dr: 1, dc: 0 },  // Down
-            { dr: 0, dc: -1 }, // Left
-            { dr: 0, dc: 1 }   // Right
+    
+    function canMerge(tile1, tile2) {
+        if (!tile1 || !tile2 || tile1.merged || tile2.merged) return false;
+        
+        // Wildcard tiles can merge with any tile of the same value
+        if (tile1.special === SPECIAL_TILES.WILDCARD || tile2.special === SPECIAL_TILES.WILDCARD) {
+            return tile1.value === tile2.value;
+        }
+        
+        // Regular tiles need same value and color
+        return tile1.value === tile2.value && tile1.color === tile2.color;
+    }
+    
+    function moveTile(tile, newRow, newCol) {
+        // Remove from old position
+        board[tile.row][tile.col] = null;
+        
+        // Update position
+        tile.row = newRow;
+        tile.col = newCol;
+        
+        // Place at new position
+        board[newRow][newCol] = tile;
+    }
+    
+    function mergeTiles(fromTile, toTile) {
+        const newValue = toTile.value * 2;
+        const wasConverter = fromTile.special === SPECIAL_TILES.CONVERTER || toTile.special === SPECIAL_TILES.CONVERTER;
+        
+        // Determine merged color (special rules for wildcards and 32/256 values)
+        let newColor;
+        
+        if (fromTile.special === SPECIAL_TILES.WILDCARD && toTile.special === SPECIAL_TILES.WILDCARD) {
+            newColor = getRandomColor();
+        } else if (fromTile.special === SPECIAL_TILES.WILDCARD) {
+            newColor = toTile.color;
+        } else if (toTile.special === SPECIAL_TILES.WILDCARD) {
+            newColor = fromTile.color;
+        } else {
+            newColor = toTile.color;
+        }
+        
+        // Special rule: 32 and 256 tiles change color
+        if (newValue === 32 || newValue === 256) {
+            newColor = newColor === 'red' ? 'blue' : 'red';
+        }
+        
+        // Remove from old position
+        board[fromTile.row][fromTile.col] = null;
+        
+        // Update to-tile with new values
+        toTile.value = newValue;
+        toTile.color = newColor;
+        toTile.merged = true;
+        toTile.special = null; // Special status is lost on merge
+        
+        // Update score
+        updateScore(newValue);
+        
+        // Handle converter effect if applicable
+        if (wasConverter) {
+            applyConverterEffect(toTile.row, toTile.col);
+        }
+    }
+    
+    function applyConverterEffect(row, col) {
+        // Flip color of adjacent tiles
+        const adjacentPositions = [
+            { r: row - 1, c: col },   // Up
+            { r: row + 1, c: col },   // Down
+            { r: row, c: col - 1 },   // Left
+            { r: row, c: col + 1 }    // Right
         ];
-
-        deltas.forEach(({ dr, dc }) => {
-            const adjacentR = mergedRow + dr;
-            const adjacentC = mergedCol + dc;
-
-            if (isWithinBounds(adjacentR, adjacentC)) {
-                const adjacentTile = board[adjacentR][adjacentC];
-                if (adjacentTile) {
-                    // Flip the color of the adjacent tile
-                    adjacentTile.color = (adjacentTile.color === 'red') ? 'blue' : 'red';
-                    console.log(` > Flipped color of tile at ${adjacentR}, ${adjacentC}`);
-                    // Optional: Add visual cue that color was flipped by converter?
+        
+        adjacentPositions.forEach(pos => {
+            if (isValidPosition(pos.r, pos.c) && board[pos.r][pos.c]) {
+                // Flip the color
+                board[pos.r][pos.c].color = board[pos.r][pos.c].color === 'red' ? 'blue' : 'red';
+            }
+        });
+    }
+    
+    function getRandomColor() {
+        return TILE_COLORS[Math.floor(Math.random() * TILE_COLORS.length)];
+    }
+    
+    function isGameBlocked() {
+        // Check for empty cells
+        for (let r = 0; r < GRID_SIZE; r++) {
+            for (let c = 0; c < GRID_SIZE; c++) {
+                if (!board[r][c]) return false;
+            }
+        }
+        
+        // Check for possible merges
+        for (let r = 0; r < GRID_SIZE; r++) {
+            for (let c = 0; c < GRID_SIZE; c++) {
+                const tile = board[r][c];
+                
+                // Check adjacent cells for possible merges
+                const adjacentPositions = [
+                    { r: r - 1, c: c },   // Up
+                    { r: r + 1, c: c },   // Down
+                    { r: r, c: c - 1 },   // Left
+                    { r: r, c: c + 1 }    // Right
+                ];
+                
+                for (const pos of adjacentPositions) {
+                    if (isValidPosition(pos.r, pos.c) && canMerge(tile, board[pos.r][pos.c])) {
+                        return false;
+                    }
+                }
+            }
+        }
+        
+        return true; // No moves possible
+    }
+    
+    function endGame() {
+        isGameOver = true;
+        finalScoreElement.textContent = score;
+        gameOverMessageElement.style.display = 'flex';
+    }
+    
+    // ============================
+    // Row/Column Color Change
+    // ============================
+    
+    function changeRowColor(rowIndex) {
+        if (colorChangeMoves <= 0 || isGameOver) {
+            showToast('No color change moves left!');
+            return false;
+        }
+        
+        const adjustedRowIndex = rowIndex - 1; // Convert 1-based to 0-based
+        
+        if (adjustedRowIndex < 0 || adjustedRowIndex >= GRID_SIZE) {
+            showToast('Invalid row number. Please enter 1-6.');
+            return false;
+        }
+        
+        let changed = false;
+        
+        for (let c = 0; c < GRID_SIZE; c++) {
+            if (board[adjustedRowIndex][c]) {
+                board[adjustedRowIndex][c].color = board[adjustedRowIndex][c].color === 'red' ? 'blue' : 'red';
+                changed = true;
+            }
+        }
+        
+        if (changed) {
+            colorChangeMoves--;
+            movesLeftElement.textContent = colorChangeMoves;
+            updateBoardVisuals();
+            return true;
+        } else {
+            showToast('Row is empty, no change made.');
+            return false;
+        }
+    }
+    
+    function changeColumnColor(colIndex) {
+        if (colorChangeMoves <= 0 || isGameOver) {
+            showToast('No color change moves left!');
+            return false;
+        }
+        
+        const adjustedColIndex = colIndex - 1; // Convert 1-based to 0-based
+        
+        if (adjustedColIndex < 0 || adjustedColIndex >= GRID_SIZE) {
+            showToast('Invalid column number. Please enter 1-6.');
+            return false;
+        }
+        
+        let changed = false;
+        
+        for (let r = 0; r < GRID_SIZE; r++) {
+            if (board[r][adjustedColIndex]) {
+                board[r][adjustedColIndex].color = board[r][adjustedColIndex].color === 'red' ? 'blue' : 'red';
+                changed = true;
+            }
+        }
+        
+        if (changed) {
+            colorChangeMoves--;
+            movesLeftElement.textContent = colorChangeMoves;
+            updateBoardVisuals();
+            return true;
+        } else {
+            showToast('Column is empty, no change made.');
+            return false;
+        }
+    }
+    
+    // ============================
+    // UI Updates
+    // ============================
+    
+    function updateBoardVisuals() {
+        const tileElements = document.querySelectorAll('.tile');
+        const currentTiles = new Map();
+        const visibleTiles = new Map();
+        
+        // Create map of current board tiles
+        for (let r = 0; r < GRID_SIZE; r++) {
+            for (let c = 0; c < GRID_SIZE; c++) {
+                const tile = board[r][c];
+                if (tile) {
+                    currentTiles.set(tile.id.toString(), tile);
+                }
+            }
+        }
+        
+        // Create map of visible tile elements
+        tileElements.forEach(el => {
+            visibleTiles.set(el.dataset.id, el);
+        });
+        
+        // Update or create tiles
+        currentTiles.forEach((tile, id) => {
+            let tileElement = visibleTiles.get(id);
+            
+            if (!tileElement) {
+                // Create a new tile element
+                createTileElement(tile);
+            } else {
+                // Update existing tile
+                
+                // Update position
+                positionTile(tileElement, tile.row, tile.col);
+                
+                // Update value
+                if (parseInt(tileElement.dataset.value) !== tile.value) {
+                    tileElement.dataset.value = tile.value;
+                    if (tile.special === SPECIAL_TILES.WILDCARD) {
+                        tileElement.textContent = '★';
+                    } else {
+                        tileElement.textContent = tile.value;
+                    }
+                    updateTileFontSize(tileElement);
+                }
+                
+                // Update color
+                tileElement.classList.remove('color-red', 'color-blue');
+                tileElement.classList.add(`color-${tile.color}`);
+                
+                // Update special status
+                tileElement.classList.remove(SPECIAL_TILES.WILDCARD, SPECIAL_TILES.CONVERTER);
+                if (tile.special) {
+                    tileElement.classList.add(tile.special);
                 }
             }
         });
-        // Visuals will be updated in updateBoardVisuals() called after the move function completes
-    }
-    // --------------------------------
-
-    function updateBoardVisuals() {
-        const tileElements = boardElement.querySelectorAll('.tile');
-        const tilesOnBoardData = new Map(); // Map ID -> tileData from board array
-        const existingTileElements = new Map(); // Map ID -> tile DOM element
-
-        tileElements.forEach(el => existingTileElements.set(el.dataset.id, el));
-
-        // Iterate through the logical board state
-        for (let r = 0; r < gridSize; r++) {
-            for (let c = 0; c < gridSize; c++) {
-                const tileData = board[r][c];
-                if (tileData) {
-                    tilesOnBoardData.set(tileData.id.toString(), tileData);
-                    let tileElement = existingTileElements.get(tileData.id.toString());
-
-                    if (!tileElement) {
-                        // This is a new tile - create it
-                        createTileElement(tileData);
-                        tileElement = boardElement.querySelector(`.tile[data-id="${tileData.id}"]`);
-                        if (!tileElement) {
-                            console.error("Failed to create or find tile element for:", tileData);
-                            continue; // Skip if element creation failed
-                        }
-                    }
-
-                    // --- Update Existing or Newly Found Element ---
-                    // Update position based on tileData's r, c
-                    positionTile(tileElement, tileData.r, tileData.c);
-
-                    // Update value and display
-                    const currentValue = parseInt(tileElement.dataset.value);
-                    if (currentValue !== tileData.value) {
-                        tileElement.dataset.value = tileData.value;
-                        tileElement.textContent = tileData.special === SPECIAL_TILES.WILDCARD ? '★' : tileData.value;
-                    }
-
-                    // Update color - ensure this works on all devices
-                    const newColorClass = `color-${tileData.color}`;
-                    
-                    // Remove all color classes first
-                    tileElement.classList.remove('color-red', 'color-blue');
-                    
-                    // Add the correct color class
-                    tileElement.classList.add(newColorClass);
-
-                    // Update special status
-                    tileElement.classList.remove(SPECIAL_TILES.WILDCARD, SPECIAL_TILES.CONVERTER);
-                    if (tileData.special) {
-                        tileElement.classList.add(tileData.special);
-                        if (tileData.special === SPECIAL_TILES.WILDCARD) {
-                            tileElement.textContent = '★';
-                        }
-                    }
-                }
-            }
-        }
-
-        // Remove tiles that are no longer in the board
-        existingTileElements.forEach((tileElement, id) => {
-            if (!tilesOnBoardData.has(id)) {
-                // Clean removal with animation
-                tileElement.style.transform = 'scale(0)';
-                tileElement.style.opacity = '0';
+        
+        // Remove tiles that are no longer on the board
+        visibleTiles.forEach((element, id) => {
+            if (!currentTiles.has(id)) {
+                element.style.transform = 'scale(0)';
+                element.style.opacity = '0';
                 
                 setTimeout(() => {
-                    if (tileElement.parentElement) {
-                        boardElement.removeChild(tileElement);
+                    if (element.parentElement) {
+                        element.parentElement.removeChild(element);
                     }
                 }, 200);
             }
         });
     }
-
-    function checkGameOver() {
-        // Check for empty cells
-        for (let r = 0; r < gridSize; r++) {
-            for (let c = 0; c < gridSize; c++) {
-                if (!board[r][c]) {
-                    return false; // Found an empty cell
-                }
-            }
-        }
-
-        // Check for possible merges horizontally and vertically
-        for (let r = 0; r < gridSize; r++) {
-            for (let c = 0; c < gridSize; c++) {
-                const currentTile = board[r][c];
-                // Check right neighbor
-                if (c < gridSize - 1) {
-                    const rightTile = board[r][c + 1];
-                    if (canMerge(currentTile, rightTile)) {
-                        return false;
-                    }
-                }
-                // Check bottom neighbor
-                if (r < gridSize - 1) {
-                    const bottomTile = board[r + 1][c];
-                    if (canMerge(currentTile, bottomTile)) {
-                        return false;
-                    }
-                }
-            }
-        }
-
-        return true; // No empty cells and no possible merges
+    
+    function updateScore(points) {
+        score += points * comboMultiplier;
+        scoreElement.textContent = score;
     }
-
-    function canMerge(tile1, tile2) {
-         if (!tile1 || !tile2) return false;
-         // Prevent merging if either tile was already part of a merge in this move cycle
-         if (tile1.merged || tile2.merged) return false;
-
-         const isWildcard1 = tile1.special === SPECIAL_TILES.WILDCARD;
-         const isWildcard2 = tile2.special === SPECIAL_TILES.WILDCARD;
-
-         // Wildcard merging rules: Only need same value
-         if (isWildcard1 || isWildcard2) {
-             return tile1.value === tile2.value;
-         }
-
-         // Standard merge rule: Need same value AND same color
-         return tile1.value === tile2.value && tile1.color === tile2.color;
+    
+    function updateCombo() {
+        comboMultiplier++;
+        comboMultiplierElement.textContent = comboMultiplier;
     }
-
-    function endGame() {
-        isGameOver = true;
-        finalScoreElement.textContent = score;
-        gameOverMessageElement.style.display = 'flex'; // Show the message
-    }
-
-    function restartGame() {
-        score = 0;
+    
+    function resetCombo() {
         comboMultiplier = 1;
-        colorChangeMoves = 5; // Reset moves
-        isGameOver = false;
-        gameOverMessageElement.style.display = 'none'; // Hide message
-        updateScore(0); // Resets score to 0 visually
-        updateCombo(true);
-        updateMovesLeft();
-        initBoard();
-        // Add more initial tiles for 6x6 board
-        addRandomTile();
-        addRandomTile();
-        addRandomTile();
-        addRandomTile();
-        updateBoardVisuals(); // Make sure the board is visually correct
+        comboMultiplierElement.textContent = comboMultiplier;
     }
-
-    // --- Input Handling ---
+    
+    function showToast(message) {
+        // Create or reuse toast element
+        let toast = document.querySelector('.toast-message');
+        
+        if (!toast) {
+            toast = document.createElement('div');
+            toast.classList.add('toast-message');
+            document.body.appendChild(toast);
+        }
+        
+        // Set message and show
+        toast.textContent = message;
+        toast.classList.add('show');
+        
+        // Hide after delay
+        setTimeout(() => {
+            toast.classList.remove('show');
+        }, 2000);
+    }
+    
+    function toggleLanguage() {
+        currentLanguage = currentLanguage === 'en' ? 'zh' : 'en';
+        
+        // Update toggle button
+        document.getElementById('language-toggle').textContent = currentLanguage === 'en' ? 'EN' : '中';
+        
+        // Update all language elements
+        document.querySelectorAll('[data-lang]').forEach(el => {
+            if (el.getAttribute('data-lang') === currentLanguage) {
+                el.style.display = '';
+            } else {
+                el.style.display = 'none';
+            }
+        });
+    }
+    
+    // ============================
+    // Event Handlers
+    // ============================
+    
     function handleKeyPress(e) {
-        console.log('Key pressed:', e.key);
         if (isGameOver) return;
+        
+        let moved = false;
+        
         switch (e.key) {
             case 'ArrowUp':
             case 'w':
-                move('up');
-                break;
-            case 'ArrowDown':
-            case 's':
-                move('down');
-                break;
-            case 'ArrowLeft':
-            case 'a':
-                move('left');
+            case 'W':
+                moved = moveTiles('up');
                 break;
             case 'ArrowRight':
             case 'd':
-                move('right');
+            case 'D':
+                moved = moveTiles('right');
+                break;
+            case 'ArrowDown':
+            case 's':
+            case 'S':
+                moved = moveTiles('down');
+                break;
+            case 'ArrowLeft':
+            case 'a':
+            case 'A':
+                moved = moveTiles('left');
                 break;
         }
-    }
-
-    // Basic Touch Handling
-    let touchStartX = 0;
-    let touchStartY = 0;
-    let touchEndX = 0;
-    let touchEndY = 0;
-
-    boardElement.addEventListener('touchstart', (e) => {
-        if (isGameOver) return;
-        touchStartX = e.changedTouches[0].screenX;
-        touchStartY = e.changedTouches[0].screenY;
-    }, { passive: true }); // Use passive for performance
-
-    boardElement.addEventListener('touchend', (e) => {
-        if (isGameOver) return;
-        touchEndX = e.changedTouches[0].screenX;
-        touchEndY = e.changedTouches[0].screenY;
-        handleSwipe();
-    });
-
-    function handleSwipe() {
-        const deltaX = touchEndX - touchStartX;
-        const deltaY = touchEndY - touchStartY;
-        const absDeltaX = Math.abs(deltaX);
-        const absDeltaY = Math.abs(deltaY);
-        const minSwipeDistance = 50; // Minimum distance for a swipe
-
-        if (Math.max(absDeltaX, absDeltaY) > minSwipeDistance) { // It's a swipe
-            // Determine direction: prioritize the larger movement axis
-            if (absDeltaX > absDeltaY) {
-                // Horizontal swipe
-                if (deltaX > 0) {
-                    move('right');
-                } else {
-                    move('left');
-                }
-            } else {
-                // Vertical swipe
-                if (deltaY > 0) {
-                    move('down');
-                } else {
-                    move('up');
-                }
-            }
-        }
-    }
-
-    // --- Color Changing (Now functional but basic UI) ---
-    // Modified the button listeners slightly to directly call the logic
-
-    // --- Event Listeners ---
-    document.addEventListener('keydown', handleKeyPress);
-    restartButton.addEventListener('click', restartGame);
-
-    changeRowBtn.addEventListener('click', () => {
-        if (colorChangeMoves <= 0 || isGameOver) {
-            alert('No color change moves left or game over!');
-            return;
-        }
-        const row = prompt(`Enter row number to change color (1-6). Moves left: ${colorChangeMoves}`);
-        const rowIndex = parseInt(row) - 1; // Convert from 1-based (UI) to 0-based (internal)
-        if (!isNaN(rowIndex) && rowIndex >= 0 && rowIndex < gridSize) {
-            let changed = false;
-            for(let c = 0; c < gridSize; c++) {
-                if (board[rowIndex][c]) {
-                    // Flip color: red -> blue, blue -> red
-                    board[rowIndex][c].color = (board[rowIndex][c].color === 'red') ? 'blue' : 'red';
-                    changed = true;
-                }
-            }
-            if (changed) {
-                colorChangeMoves--;
-                updateMovesLeft();
-                updateBoardVisuals(); // Update display immediately
-            } else {
-                alert('Row is empty, no change made.');
-            }
-        } else {
-            alert('Invalid row number. Please enter a number between 1 and 6.');
-        }
-    });
-
-    changeColBtn.addEventListener('click', () => {
-        if (colorChangeMoves <= 0 || isGameOver) {
-            alert('No color change moves left or game over!');
-            return;
-        }
-        const col = prompt(`Enter column number to change color (1-6). Moves left: ${colorChangeMoves}`);
-        const colIndex = parseInt(col) - 1; // Convert from 1-based (UI) to 0-based (internal)
-        if (!isNaN(colIndex) && colIndex >= 0 && colIndex < gridSize) {
-            let changed = false;
-            for(let r = 0; r < gridSize; r++) {
-                if (board[r][colIndex]) {
-                     board[r][colIndex].color = (board[r][colIndex].color === 'red') ? 'blue' : 'red';
-                     changed = true;
-                }
-            }
-            if(changed) {
-                colorChangeMoves--;
-                updateMovesLeft();
-                updateBoardVisuals();
-            } else {
-                alert('Column is empty, no change made.');
-            }
-        } else {
-            alert('Invalid column number. Please enter a number between 1 and 6.');
-        }
-    });
-
-    // --- Game Start ---
-    function startGame() {
-        console.log('Starting game...'); // Debugging log
-        score = 0;
-        comboMultiplier = 1;
-        colorChangeMoves = 5; 
-        isGameOver = false;
         
-        // Reset UI
-        scoreElement.textContent = '0';
-        comboMultiplierElement.textContent = '1';
-        updateMovesLeft();
-        gameOverMessageElement.style.display = 'none';
-        
-        // Initialize board
-        initBoard();
-        
-        // Add initial tiles (more for 6x6 board)
-        addRandomTile();
-        addRandomTile();
-        addRandomTile();
-        addRandomTile(); // Added 2 more tiles for 6x6
-        
-        // Give a slight delay to ensure board visuals are properly updated
-        setTimeout(() => {
-            updateBoardVisuals();
-        }, 100);
-        
-        // Set up language toggle
-        document.getElementById('language-toggle').addEventListener('click', toggleLanguage);
+        if (moved) {
+            e.preventDefault();
+        }
     }
     
-    // Handle window resize to reposition tiles correctly
-    window.addEventListener('resize', () => {
-        // Debounce resize event to avoid too many calls
-        if (this.resizeTimeout) clearTimeout(this.resizeTimeout);
-        this.resizeTimeout = setTimeout(() => {
-            console.log('Window resized, updating board visuals');
-            updateBoardVisuals();
-            
-            // Force reposition of all tiles after resize
-            const allTiles = document.querySelectorAll('.tile');
-            allTiles.forEach(tile => {
-                const tileData = getTileDataById(tile.dataset.id);
-                if (tileData) {
-                    positionTile(tile, tileData.r, tileData.c);
-                }
-            });
-        }, 250);
-    });
-
-    // Helper to find tile data by id
-    function getTileDataById(id) {
-        for (let r = 0; r < gridSize; r++) {
-            for (let c = 0; c < gridSize; c++) {
-                if (board[r][c] && board[r][c].id.toString() === id) {
-                    return board[r][c];
-                }
+    function handleTouchStart(e) {
+        if (isGameOver) return;
+        
+        startX = e.touches[0].clientX;
+        startY = e.touches[0].clientY;
+    }
+    
+    function handleTouchEnd(e) {
+        if (isGameOver) return;
+        
+        const endX = e.changedTouches[0].clientX;
+        const endY = e.changedTouches[0].clientY;
+        
+        const deltaX = endX - startX;
+        const deltaY = endY - startY;
+        
+        const MIN_SWIPE = 30; // Minimum swipe distance
+        
+        // Determine direction based on strongest delta
+        if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > MIN_SWIPE) {
+            // Horizontal swipe
+            if (deltaX > 0) {
+                moveTiles('right');
+            } else {
+                moveTiles('left');
+            }
+        } else if (Math.abs(deltaY) > MIN_SWIPE) {
+            // Vertical swipe
+            if (deltaY > 0) {
+                moveTiles('down');
+            } else {
+                moveTiles('up');
             }
         }
-        return null;
     }
-
-    // Modal functionality
-    const modal = document.getElementById('instructions-modal');
-    const infoBtn = document.getElementById('info-btn');
-    const closeBtn = document.querySelector('.close-button');
-
-    // Show modal when info button is clicked
+    
+    function handleWindowResize() {
+        updateBoardVisuals();
+    }
+    
+    // ============================
+    // Event Listeners
+    // ============================
+    
+    // Keyboard controls
+    document.addEventListener('keydown', handleKeyPress);
+    
+    // Touch controls
+    let startX, startY;
+    boardElement.addEventListener('touchstart', handleTouchStart, { passive: true });
+    boardElement.addEventListener('touchend', handleTouchEnd);
+    
+    // Button controls
+    restartButton.addEventListener('click', initGame);
+    
+    // Color change buttons
+    changeRowBtn.addEventListener('click', () => {
+        if (colorChangeMoves <= 0 || isGameOver) {
+            showToast('No color change moves left!');
+            return;
+        }
+        
+        const row = prompt(`Enter row number to change color (1-6). Moves left: ${colorChangeMoves}`);
+        if (row !== null) {
+            changeRowColor(parseInt(row));
+        }
+    });
+    
+    changeColBtn.addEventListener('click', () => {
+        if (colorChangeMoves <= 0 || isGameOver) {
+            showToast('No color change moves left!');
+            return;
+        }
+        
+        const col = prompt(`Enter column number to change color (1-6). Moves left: ${colorChangeMoves}`);
+        if (col !== null) {
+            changeColumnColor(parseInt(col));
+        }
+    });
+    
+    // Modal controls
     infoBtn.addEventListener('click', () => {
         modal.style.display = 'block';
     });
-
-    // Close modal when X is clicked
+    
     closeBtn.addEventListener('click', () => {
         modal.style.display = 'none';
     });
-
-    // Close modal when clicking outside of it
-    window.addEventListener('click', (event) => {
-        if (event.target === modal) {
+    
+    window.addEventListener('click', (e) => {
+        if (e.target === modal) {
             modal.style.display = 'none';
         }
     });
-
-    // Call startGame to initialize everything
-    startGame();
+    
+    // Language toggle
+    document.getElementById('language-toggle').addEventListener('click', toggleLanguage);
+    
+    // Window resize
+    let resizeTimeout;
+    window.addEventListener('resize', () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(handleWindowResize, 250);
+    });
+    
+    // Initialize the game
+    initGame();
 }); 
