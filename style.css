@@ -50,6 +50,11 @@ body {
     min-height: 100vh;
     padding: 0;
     margin: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow-x: hidden;
+    background-color: var(--ghibli-cloud);
+    position: relative;
 }
 
 /* Fix background image for iOS */
@@ -305,55 +310,41 @@ h1::after {
 }
 
 .grid-cell {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: calc(var(--border-radius) * 0.8);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    position: relative;
     width: 100%;
     height: 100%;
-    background-color: rgba(255, 255, 255, 0.35);
-    border-radius: calc(var(--border-radius) * 0.8);
-    box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.1);
-    box-sizing: border-box;
-    position: relative;
+    box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.05);
 }
 
 /* Improve tile styles to be more consistent across devices */
 .tile {
     position: absolute;
-    border-radius: calc(var(--border-radius) * 0.8);
-    font-weight: bold;
     display: flex;
-    justify-content: center;
     align-items: center;
-    transition: transform 0.15s ease-in-out, 
-                background-color 0.15s ease-in-out, 
-                top 0.15s ease-in-out, 
-                left 0.15s ease-in-out;
+    justify-content: center;
+    font-weight: 700;
+    font-size: min(28px, 6vw);
+    transition: all 0.15s ease-in-out;
     z-index: 10;
-    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
-    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.15);
-    box-sizing: border-box;
-    border: 1px solid rgba(255, 255, 255, 0.5);
-    line-height: 1;
+    border-radius: calc(var(--border-radius) * 0.8);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
-/* Base Colors */
-.tile.color-red { 
-    background: linear-gradient(
-        to bottom right,
-        rgba(243, 187, 208, 0.9),
-        rgba(216, 139, 169, 0.85)
-    );
-    color: #fff;
-    border: 1px solid rgba(216, 139, 169, 0.7);
-    box-shadow: 0 3px 7px rgba(243, 187, 208, 0.4);
+/* Fix the color-specific styles to ensure they work on all devices */
+.tile.color-red {
+    background: linear-gradient(145deg, #ff8a8a, #ff6666);
+    color: white;
+    border: 2px solid rgba(255, 77, 77, 0.5);
 }
-.tile.color-blue { 
-    background: linear-gradient(
-        to bottom right,
-        rgba(130, 196, 245, 0.9),
-        rgba(90, 158, 208, 0.85)
-    );
-    color: #fff; 
-    border: 1px solid rgba(90, 158, 208, 0.7);
-    box-shadow: 0 3px 7px rgba(130, 196, 245, 0.4);
+
+.tile.color-blue {
+    background: linear-gradient(145deg, #82c4f5, #5dabe0);
+    color: white;
+    border: 2px solid rgba(61, 139, 214, 0.5);
 }
 
 /* Value-specific styles with responsive font sizes and gradients */
@@ -495,13 +486,42 @@ h1::after {
 
 /* Mobile optimizations */
 @media (max-width: 500px) {
+    body {
+        padding-bottom: 20px;
+        align-items: center;
+        justify-content: center;
+    }
+    
     .container {
-        padding: 8px;
-        width: 100%;
-        max-height: 100%;
-        border-radius: 0;
-        border-left: none;
-        border-right: none;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        margin: 0 auto;
+        max-width: 95%;
+        max-height: 95vh;
+        width: 95%;
+        padding: 10px;
+    }
+    
+    /* Ensure grid cells display properly on all devices */
+    .grid-cell {
+        background: rgba(255, 255, 255, 0.25);
+        border-radius: calc(var(--border-radius) * 0.7);
+        border: 1px solid rgba(255, 255, 255, 0.4);
+    }
+    
+    /* Fix tile colors for all devices */
+    .tile.color-red {
+        background: linear-gradient(145deg, #ff8a8a, #ff6666);
+        color: white;
+        border: 2px solid rgba(255, 77, 77, 0.5);
+    }
+    
+    .tile.color-blue {
+        background: linear-gradient(145deg, #82c4f5, #5dabe0);
+        color: white;
+        border: 2px solid rgba(61, 139, 214, 0.5);
     }
     
     #game-board {
@@ -509,10 +529,6 @@ h1::after {
         gap: 1%;
         padding: 1%;
         border-radius: calc(var(--border-radius) * 0.8);
-    }
-    
-    .grid-cell {
-        border-radius: calc(var(--border-radius) * 0.7);
     }
     
     h1 {

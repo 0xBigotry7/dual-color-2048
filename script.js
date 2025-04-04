@@ -138,40 +138,29 @@ document.addEventListener('DOMContentLoaded', () => {
          // Get board dimensions dynamically
          const boardRect = boardElement.getBoundingClientRect();
          
-         // Calculate the cell dimensions and spacing directly from the board
+         // Calculate the cell dimensions - make this exact and without rounding
          const cellWidth = boardRect.width / gridSize;
          const cellHeight = boardRect.height / gridSize;
          
-         // Calculate the exact position with proper spacing for centering
-         // On mobile, use smaller spacing for tighter grid
-         const isMobile = window.innerWidth <= 500;
-         const isVerySmall = window.innerWidth <= 350;
+         // Use exact percentage-based positions to prevent grid shifting
+         const top = (r * (100 / gridSize)) + '%';
+         const left = (c * (100 / gridSize)) + '%';
          
-         // Adjust spacing based on screen size
-         let spacingPercentage;
-         if (isVerySmall) {
-             spacingPercentage = 0.008; // 0.8% for very small screens
-         } else if (isMobile) {
-             spacingPercentage = 0.01; // 1% for mobile
-         } else {
-             spacingPercentage = 0.015; // 1.5% for desktop
-         }
-         
-         const spacing = cellWidth * spacingPercentage;
-         const tileSize = cellWidth - (spacing * 2);
+         // Size based on cell dimensions with small reduction for spacing
+         const tileSize = Math.min(cellWidth, cellHeight) * 0.9;
          
          // Set the tile size directly
          tileElement.style.width = `${tileSize}px`;
          tileElement.style.height = `${tileSize}px`;
          
-         // Position the tile with proper spacing for centering
-         const top = (r * cellHeight) + spacing;
-         const left = (c * cellWidth) + spacing;
+         // Position the tile with percentage positioning for stability
+         tileElement.style.top = top;
+         tileElement.style.left = left;
          
-         tileElement.style.top = `${top}px`;
-         tileElement.style.left = `${left}px`;
+         // Adjust font size based on the tile size
+         const isMobile = window.innerWidth <= 500;
+         const isVerySmall = window.innerWidth <= 350;
          
-         // Adjust font size based on the tile size and screen size
          let fontSizeMultiplier;
          if (isVerySmall) {
              fontSizeMultiplier = 0.35; // Smaller font for very small screens
@@ -444,93 +433,59 @@ document.addEventListener('DOMContentLoaded', () => {
                     let tileElement = existingTileElements.get(tileData.id.toString());
 
                     if (!tileElement) {
-                        // This tile is new (likely the result of a merge where the ID was kept)
-                        // Or it's a newly added random tile
-                         console.warn("Creating missing tile element during visual update for ID:", tileData.id, tileData);
-                         // Need to find the element that *should* represent this data (merged tile)
-                         // This part is tricky because the 'merged' tile keeps its ID.
-                         // Let's refine the logic: If a tile was marked as merged, update its element.
-                         // A truly *new* element is only needed for addRandomTile.
-
-                         // Let's try finding by potential merged status first
-                         const potentialMergedElement = boardElement.querySelector(`.tile[data-id="${tileData.id}"][data-merged="true"]`);
-                         if(potentialMergedElement) {
-                             tileElement = potentialMergedElement;
-                             tileElement.removeAttribute('data-merged'); // Clear merge flag visually if needed
-                         } else {
-                            // If still not found, it *must* be a brand new tile from addRandomTile
-                            createTileElement(tileData); // Create the element if truly new
-                            tileElement = boardElement.querySelector(`.tile[data-id="${tileData.id}"]`); // Find it again
-                            if (!tileElement) {
-                                 console.error("Failed to create or find tile element for:", tileData);
-                                 continue; // Skip if element creation failed
-                            }
-                         }
+                        // This is a new tile - create it
+                        createTileElement(tileData);
+                        tileElement = boardElement.querySelector(`.tile[data-id="${tileData.id}"]`);
+                        if (!tileElement) {
+                            console.error("Failed to create or find tile element for:", tileData);
+                            continue; // Skip if element creation failed
+                        }
                     }
 
-                     // --- Update Existing or Newly Found Element ---
+                    // --- Update Existing or Newly Found Element ---
+                    // Update position based on tileData's r, c
+                    positionTile(tileElement, tileData.r, tileData.c);
 
-                     // Update position based on tileData's r, c (which should be correct after move logic)
-                     positionTile(tileElement, tileData.r, tileData.c);
-
-                     // Update value and check for merge animation
+                    // Update value and display
                     const currentValue = parseInt(tileElement.dataset.value);
                     if (currentValue !== tileData.value) {
                         tileElement.dataset.value = tileData.value;
-                        // Add merge animation class?
-                        // tileElement.classList.add('tile-merged'); // Add animation hook
-                        // setTimeout(() => tileElement.classList.remove('tile-merged'), 100); // Remove after animation
-                        tileElement.textContent = tileData.special === SPECIAL_TILES.WILDCARD ? '★' : tileData.value; // Update text
+                        tileElement.textContent = tileData.special === SPECIAL_TILES.WILDCARD ? '★' : tileData.value;
                     }
 
-                    // Update color
-                    const currentColorClass = tileElement.classList.contains('color-red') ? 'color-red' : (tileElement.classList.contains('color-blue') ? 'color-blue' : null);
+                    // Update color - ensure this works on all devices
                     const newColorClass = `color-${tileData.color}`;
-                    if (currentColorClass !== newColorClass) {
-                        if(currentColorClass) tileElement.classList.remove(currentColorClass);
-                        tileElement.classList.add(newColorClass);
-                        // Add color change animation?
+                    
+                    // Remove all color classes first
+                    tileElement.classList.remove('color-red', 'color-blue');
+                    
+                    // Add the correct color class
+                    tileElement.classList.add(newColorClass);
+
+                    // Update special status
+                    tileElement.classList.remove(SPECIAL_TILES.WILDCARD, SPECIAL_TILES.CONVERTER);
+                    if (tileData.special) {
+                        tileElement.classList.add(tileData.special);
+                        if (tileData.special === SPECIAL_TILES.WILDCARD) {
+                            tileElement.textContent = '★';
+                        }
                     }
-
-                     // Update special status class
-                     const currentSpecial = tileElement.classList.contains(SPECIAL_TILES.WILDCARD) ? SPECIAL_TILES.WILDCARD :
-                                           tileElement.classList.contains(SPECIAL_TILES.CONVERTER) ? SPECIAL_TILES.CONVERTER : null;
-                     if (currentSpecial !== tileData.special) {
-                         if (currentSpecial) tileElement.classList.remove(currentSpecial);
-                         if (tileData.special) {
-                             tileElement.classList.add(tileData.special);
-                             tileElement.textContent = tileData.special === SPECIAL_TILES.WILDCARD ? '★' : tileData.value;
-                         } else if (currentSpecial === SPECIAL_TILES.WILDCARD && !tileData.special) {
-                             // If it WAS a wildcard but no longer is, reset text content
-                             tileElement.textContent = tileData.value;
-                         }
-                     }
-
-                    // Ensure the element is positioned correctly according to the final board state
-                    positionTile(tileElement, tileData.r, tileData.c);
                 }
             }
         }
 
-        // Remove tile elements that are no longer in the board array (they moved and merged into another tile)
-         existingTileElements.forEach((tileElement, id) => {
+        // Remove tiles that are no longer in the board
+        existingTileElements.forEach((tileElement, id) => {
             if (!tilesOnBoardData.has(id)) {
-                // This tile's ID is gone from the board, meaning it merged into another tile
-                 if (tileElement.parentElement) { // Check it hasn't already been removed
-                     // Optional: Add a disappearing animation before removing
-                     tileElement.style.transform = 'scale(0)';
-                     tileElement.addEventListener('transitionend', () => {
-                         if (tileElement.parentElement) {
-                              boardElement.removeChild(tileElement);
-                         }
-                     }, { once: true });
-                     // Fallback removal if transition doesn't fire (e.g., element detached)
-                     setTimeout(() => {
-                          if (tileElement.parentElement) {
-                              boardElement.removeChild(tileElement);
-                         }
-                     }, 200); // Slightly longer than transition
-                 }
+                // Clean removal with animation
+                tileElement.style.transform = 'scale(0)';
+                tileElement.style.opacity = '0';
+                
+                setTimeout(() => {
+                    if (tileElement.parentElement) {
+                        boardElement.removeChild(tileElement);
+                    }
+                }, 200);
             }
         });
     }
@@ -700,8 +655,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (board[rowIndex][c]) {
                     // Flip color: red -> blue, blue -> red
                     board[rowIndex][c].color = (board[rowIndex][c].color === 'red') ? 'blue' : 'red';
-                    // Remove special status if color change invalidates it? (Optional rule)
-                    // board[rowIndex][c].special = null;
                     changed = true;
                 }
             }
@@ -729,7 +682,6 @@ document.addEventListener('DOMContentLoaded', () => {
             for(let r = 0; r < gridSize; r++) {
                 if (board[r][colIndex]) {
                      board[r][colIndex].color = (board[r][colIndex].color === 'red') ? 'blue' : 'red';
-                     // board[r][colIndex].special = null; // Optional
                      changed = true;
                 }
             }
