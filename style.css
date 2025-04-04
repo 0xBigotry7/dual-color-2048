@@ -10,9 +10,9 @@
     --ghibli-cloud: #f9fcff;
     --ghibli-pink: #f3bbd0;
     --ghibli-dark: #3e4a41;
-    --tile-size: 67.5px;
-    --tile-spacing: 10px;
-    --border-radius: 12px;
+    --tile-size: 55px;
+    --tile-spacing: 8px;
+    --border-radius: 10px;
     --box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
 }
 
@@ -281,7 +281,7 @@ h1::after {
 
 /* Center the game board and make it larger */
 #game-board {
-    width: min(95vmin, 450px);
+    width: min(95vmin, 550px);
     aspect-ratio: 1 / 1;
     background: rgba(143, 182, 127, 0.7);
     background: linear-gradient(
@@ -291,10 +291,10 @@ h1::after {
     );
     border-radius: var(--border-radius);
     display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    grid-template-rows: repeat(4, 1fr);
-    gap: 2%;
-    padding: 2%;
+    grid-template-columns: repeat(6, 1fr);
+    grid-template-rows: repeat(6, 1fr);
+    gap: 1.5%;
+    padding: 1.5%;
     position: relative;
     margin: 0 auto;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
@@ -311,6 +311,7 @@ h1::after {
     border-radius: var(--border-radius);
     box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.1);
     box-sizing: border-box;
+    position: relative;
 }
 
 /* Improve tile styles to be more consistent across devices */
@@ -579,7 +580,7 @@ h1::after {
     }
     
     #game-board {
-        width: min(70vh, 450px);
+        width: min(75vh, 550px);
         margin: 0;
     }
     
@@ -651,8 +652,7 @@ h1::after {
 /* Enhance the tiles with subtle hover effects */
 .tile:hover {
     transform: scale(1.05);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
-    z-index: 20;
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
 }
 
 /* Add a subtle pulse animation to special tiles */
@@ -841,7 +841,7 @@ body::after {
     animation: float-reverse 9s infinite linear;
 }
 
-/* Add visual effects to create a more magical Ghibli feel */
+/* Fix the visual effects to avoid board changing appearance */
 #game-board::before {
     content: '';
     position: absolute;
@@ -852,41 +852,8 @@ body::after {
     background: linear-gradient(45deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0) 100%);
     border-radius: calc(var(--border-radius) + 5px);
     z-index: -1;
-    animation: rotating 10s linear infinite;
-}
-
-@keyframes rotating {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-}
-
-/* Animated hover effect for tiles */
-.tile:hover {
-    transform: scale(1.05);
-    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
-}
-
-/* Soften the hover effect on buttons */
-.score-container:hover, .combo-container:hover {
-    transform: translateY(-2px);
-    animation: float-gentle 3s infinite ease-in-out;
-}
-
-@keyframes float-gentle {
-    0%, 100% { transform: translateY(0) rotate(0); }
-    50% { transform: translateY(-5px) rotate(0.5deg); }
-}
-
-.language-toggle:hover {
-    background-color: rgba(173, 140, 109, 0.8);
-    transform: translateY(-2px);
-    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
-}
-
-.info-button:hover {
-    background-color: rgba(93, 138, 104, 0.8);
-    transform: translateY(-2px);
-    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+    pointer-events: none;
+    animation: none; /* Remove animation that might cause visual changes */
 }
 
 /* Mobile-specific customizations */
@@ -1012,4 +979,33 @@ body::after {
     .grid-cell {
         background-color: rgba(255, 255, 255, 0.25);
     }
+}
+
+/* Animated hover effect for tiles */
+.tile:hover {
+    transform: scale(1.05);
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Soften the hover effect on buttons */
+.score-container:hover, .combo-container:hover {
+    transform: translateY(-2px);
+    animation: float-gentle 3s infinite ease-in-out;
+}
+
+@keyframes float-gentle {
+    0%, 100% { transform: translateY(0) rotate(0); }
+    50% { transform: translateY(-5px) rotate(0.5deg); }
+}
+
+.language-toggle:hover {
+    background-color: rgba(173, 140, 109, 0.8);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+}
+
+.info-button:hover {
+    background-color: rgba(93, 138, 104, 0.8);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
 } 

@@ -13,7 +13,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const finalScoreElement = document.getElementById('final-score');
     const restartButton = document.getElementById('restart-button');
 
-    const gridSize = 4;
+    const gridSize = 6;
     let board = []; // 2D array representing the grid
     let score = 0;
     let comboMultiplier = 1;
@@ -139,11 +139,11 @@ document.addEventListener('DOMContentLoaded', () => {
          const boardRect = boardElement.getBoundingClientRect();
          
          // Calculate the cell dimensions and spacing directly from the board
-         const cellWidth = boardRect.width / 4;
-         const cellHeight = boardRect.height / 4;
+         const cellWidth = boardRect.width / gridSize;
+         const cellHeight = boardRect.height / gridSize;
          
          // Calculate the exact position with proper offset for centering
-         const spacing = cellWidth * 0.02; // 2% spacing
+         const spacing = cellWidth * 0.015; // 1.5% spacing for smaller cells
          const tileSize = cellWidth - (spacing * 2);
          
          // Set the tile size directly
@@ -157,9 +157,9 @@ document.addEventListener('DOMContentLoaded', () => {
          tileElement.style.top = `${top}px`;
          tileElement.style.left = `${left}px`;
          
-         // Adjust font size based on the tile size for better readability on mobile
-         const fontSize = tileSize * 0.45;
-         tileElement.style.fontSize = `${Math.min(fontSize, 30)}px`;
+         // Adjust font size based on the tile size for better readability
+         const fontSize = tileSize * 0.4; // Slightly smaller font size for 6x6
+         tileElement.style.fontSize = `${Math.min(fontSize, 26)}px`;
      }
 
     // --- Game State Updates ---
@@ -578,6 +578,9 @@ document.addEventListener('DOMContentLoaded', () => {
         updateCombo(true);
         updateMovesLeft();
         initBoard();
+        // Add more initial tiles for 6x6 board
+        addRandomTile();
+        addRandomTile();
         addRandomTile();
         addRandomTile();
         updateBoardVisuals(); // Make sure the board is visually correct
@@ -665,7 +668,7 @@ document.addEventListener('DOMContentLoaded', () => {
             alert('No color change moves left or game over!');
             return;
         }
-        const row = prompt(`Enter row number to change color (0-${gridSize-1}). Moves left: ${colorChangeMoves}`);
+        const row = prompt(`Enter row number to change color (0-5). Moves left: ${colorChangeMoves}`);
         const rowIndex = parseInt(row);
         if (!isNaN(rowIndex) && rowIndex >= 0 && rowIndex < gridSize) {
             let changed = false;
@@ -695,7 +698,7 @@ document.addEventListener('DOMContentLoaded', () => {
             alert('No color change moves left or game over!');
             return;
         }
-        const col = prompt(`Enter column number to change color (0-${gridSize-1}). Moves left: ${colorChangeMoves}`);
+        const col = prompt(`Enter column number to change color (0-5). Moves left: ${colorChangeMoves}`);
         const colIndex = parseInt(col);
         if (!isNaN(colIndex) && colIndex >= 0 && colIndex < gridSize) {
             let changed = false;
@@ -720,9 +723,28 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Game Start ---
     function startGame() {
-        restartGame(); // Use restart logic for initial setup
+        console.log('Starting game...'); // Debugging log
+        score = 0;
+        comboMultiplier = 1;
+        colorChangeMoves = 5; 
+        isGameOver = false;
         
-        // Add a small delay to ensure all styling is applied correctly
+        // Reset UI
+        scoreElement.textContent = '0';
+        comboMultiplierElement.textContent = '1';
+        updateMovesLeft();
+        gameOverMessageElement.style.display = 'none';
+        
+        // Initialize board
+        initBoard();
+        
+        // Add initial tiles (more for 6x6 board)
+        addRandomTile();
+        addRandomTile();
+        addRandomTile();
+        addRandomTile(); // Added 2 more tiles for 6x6
+        
+        // Give a slight delay to ensure board visuals are properly updated
         setTimeout(() => {
             updateBoardVisuals();
         }, 100);
