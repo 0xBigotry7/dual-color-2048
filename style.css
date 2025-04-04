@@ -891,28 +891,125 @@ body::after {
 
 /* Mobile-specific customizations */
 @media (max-width: 768px) {
-    /* Use solid colors with slight transparency for better mobile rendering */
+    /* Use more transparent colors for mobile rendering */
     .container {
-        background: rgba(255, 255, 255, 0.92);
+        background: rgba(255, 255, 255, 0.65);
+        background: linear-gradient(
+            to bottom,
+            rgba(255, 255, 255, 0.6),
+            rgba(249, 242, 227, 0.55)
+        );
     }
     
     #game-board {
-        background: rgba(143, 182, 127, 0.85);
+        background: rgba(143, 182, 127, 0.55);
+        background: linear-gradient(
+            145deg,
+            rgba(143, 182, 127, 0.5),
+            rgba(165, 216, 255, 0.4)
+        );
     }
     
     .score-container, .combo-container {
-        background-color: rgba(249, 242, 227, 0.92);
+        background-color: rgba(249, 242, 227, 0.65);
+        background: linear-gradient(
+            to bottom,
+            rgba(249, 242, 227, 0.65),
+            rgba(255, 255, 255, 0.55)
+        );
     }
     
     .grid-cell {
-        background-color: rgba(255, 255, 255, 0.5);
+        background-color: rgba(255, 255, 255, 0.3);
     }
     
     .tile.color-red { 
-        background-color: rgba(243, 187, 208, 0.95); 
+        background: linear-gradient(
+            to bottom right,
+            rgba(243, 187, 208, 0.82),
+            rgba(216, 139, 169, 0.75)
+        );
     }
     
     .tile.color-blue { 
-        background-color: rgba(130, 196, 245, 0.95); 
+        background: linear-gradient(
+            to bottom right,
+            rgba(130, 196, 245, 0.82),
+            rgba(90, 158, 208, 0.75)
+        );
+    }
+    
+    /* Ensure moves container is also transparent */
+    .moves-container {
+        background-color: rgba(249, 242, 227, 0.65);
+        background: linear-gradient(
+            to bottom,
+            rgba(249, 242, 227, 0.65),
+            rgba(255, 255, 255, 0.55)
+        );
+    }
+    
+    /* Fix background image display */
+    body {
+        background-attachment: scroll;
+        background-position: center center;
+    }
+    
+    /* Enhance text shadows for better readability on transparent backgrounds */
+    .tile, h1, .score-container, .combo-container, .moves-container {
+        text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    }
+}
+
+/* Fix combo number display */
+.combo-container .value {
+    font-size: 22px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    text-align: center;
+}
+
+.combo-container .value span {
+    margin-right: 2px;
+}
+
+/* Ensure text is always readable */
+.score-container .value, .combo-container .value, .moves-container .value {
+    color: var(--ghibli-dark);
+    text-shadow: 0 1px 1px rgba(255, 255, 255, 0.5);
+}
+
+/* iOS-specific fixes for background image */
+@supports (-webkit-touch-callout: none) {
+    body {
+        background-attachment: scroll;
+        background-size: cover;
+        background-position: center center;
+    }
+    
+    /* Add a subtle background color to help with transparency */
+    body::before {
+        background: linear-gradient(
+            to bottom,
+            rgba(255, 255, 255, 0.1),
+            rgba(165, 216, 255, 0.2)
+        );
+        opacity: 0.8;
+    }
+    
+    /* Enhance iOS transparency */
+    .container {
+        background: rgba(255, 255, 255, 0.6);
+    }
+    
+    #game-board {
+        background: rgba(143, 182, 127, 0.5);
+    }
+    
+    .grid-cell {
+        background-color: rgba(255, 255, 255, 0.25);
     }
 } 
