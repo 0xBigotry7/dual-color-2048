@@ -67,9 +67,12 @@ body::before {
     left: 0;
     width: 100%;
     height: 100%;
-    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAEDklEQVRogX2aW27kOgxEy4vJ/ncz85H5aAMFgqZOQaRkWwRBNmX58PD29vb29vP19eU/n5+f/vP+/u72/f3dlvf3d3++vr7c/vj48Of7+9vXz89P9/E+P+PNMV/tmGs+xo/1+fn5aXue67rultq0r+u6fb6/v7t9XVfbnJfaxP/6+ton7rWvdbZd19U2+p6fn/18fn62jb3ShnV+z/dz3whHbeyVDZ/jNxk+Pj5shG3i1mf8h5TTcOUT//X11TZ6EXue64qBdFrnvs/r+/HbQX65YX0x5meMFEgHbcyHj7HuiZB9jOX5WGcscTHHfDF+jCUW4zbWmedjHb0sZM6J3zrW2RMDY631NceUWr9Ye+VNQsTe+3Vdt+8xxrxQ5lzGZK+xh4XsD8ZZB6Jif/Kv6xobNtY+eCbCwjoQl3mJn1ixEA/xYY84ss/bVgezwDkmNM/Jy3qQYb7i5jlrWTt+co0YM0+elzVlDdnLb0SqsZklWwgbZt/n19eXm5hbH3h4g4XGnM81EbHQxNBzxtZaKKIXHxGZv9T6RdvxJ4Z5KTdcE0PW7b9lSQzMwRwx4TMGXGNu4vRzfZjrE7YJlkz4HFvMcy9jkW+e12eNWcv+M8btj/rCOu/rIgqmgAIYE9YkhvjNZ/xESN4xZ37mkEkssTGumI+9/LGW9RJv/KktjNk3vz/MI5lc40HUlVDWzb+wNkEQ0XwiHn4xnpj67c49LPzxoab5HX+Mk1/O8bPO2vnwt6RCELHEgvWbGGI+rJ8mpmOHOGPAWvnFuhEjMeW3NPaLOfbKh3jz3xLCOGMGEgnhnIuYIwbWG/OTL2vE1hJoHYfzYW3EytpZF37WTYysfc5LbWp9k4I4JJYUDzFSYhGZmCC+rDF/xE8sxcn8jMlaYxEn+4mZtedDnOxnnvuISAIQYO97iKAbiEDsrXkQTExLADHnM8dljGMtMcYlprm312bN5nvUFvyWUxJPApBoJI71i0RYMiXO5pxY1l4sxPesn7FiZ08+7O+9zPVoIyScmiFRJJLEsbVaSk+MJS/x4L88Y53Y+o0/lvgxj2OZB//Em3OyL2tDAmG+WiPBSJiYilWJtbfWzZuxE2c+4pAA1o0EGWvEsM4/a2deYoMPa32slV+tpZjAr9YICSNBJMzaM0M8fMa3vZpAYmNLTLFO/K3XiLExY+VTzKyF9dWxqZrjZ6zOOTWkH/7LF5IsYbFQYkiINctaIoiBGLHnWGsua8v7EwP+iTPWrFN6GcMY/JNf9JJbTGppxTyJtfYbSs1QC1iLNSVi7Uu0mHIMYu1vlqwpa0ZsYmrrHfGKX2umOtdFffxFhOnWnNqQcGsG53uT9YoN60XiiS/7iQVjHTvExH5xMY8lmViIu1iyLybiL870sv9/8PDhwy9hD8EAAAAASUVORK5CYII=');
-    opacity: 0.04;
-    z-index: -1;
+    background: linear-gradient(
+        to bottom,
+        rgba(255, 255, 255, 0.2),
+        rgba(165, 216, 255, 0.3)
+    );
+    z-index: 0;
     pointer-events: none;
 }
 
@@ -92,7 +95,12 @@ html, body {
     left: 50%;
     transform: translate(-50%, -50%);
     text-align: center;
-    background-color: rgba(255, 255, 255, 0.7);
+    background: rgba(255, 255, 255, 0.75);
+    background: linear-gradient(
+        to bottom,
+        rgba(255, 255, 255, 0.85),
+        rgba(249, 242, 227, 0.8)
+    );
     padding: 15px;
     border-radius: var(--border-radius);
     box-shadow: var(--box-shadow);
@@ -100,7 +108,6 @@ html, body {
     width: 95%;
     max-height: 95vh;
     overflow: hidden;
-    backdrop-filter: blur(2px);
     z-index: 1;
     border: 2px solid rgba(173, 140, 109, 0.6);
     display: flex;
@@ -182,9 +189,14 @@ h1::after {
     border-radius: 3px;
 }
 
-/* Optimize for mobile-first approach */
+/* Make sure score and combo display properly */
 .score-container, .combo-container {
-    background-color: rgba(249, 242, 227, 0.7);
+    background-color: rgba(249, 242, 227, 0.8);
+    background: linear-gradient(
+        to bottom,
+        rgba(249, 242, 227, 0.85),
+        rgba(255, 255, 255, 0.75)
+    );
     padding: 8px 12px;
     border-radius: var(--border-radius);
     font-weight: bold;
@@ -220,7 +232,7 @@ h1::after {
     justify-content: center;
 }
 
-/* Make controls more compact */
+/* Update controls container to match the style */
 .controls {
     margin-bottom: 10px;
     display: grid;
@@ -235,7 +247,11 @@ h1::after {
     display: flex;
     flex-direction: column;
     align-items: center;
-    background-color: rgba(249, 242, 227, 0.7);
+    background: linear-gradient(
+        to bottom,
+        rgba(249, 242, 227, 0.85),
+        rgba(255, 255, 255, 0.75)
+    );
     padding: 10px;
     border-radius: var(--border-radius);
     font-weight: bold;
@@ -246,14 +262,18 @@ h1::after {
 
 .controls button {
     padding: 10px;
-    background-color: rgba(93, 138, 104, 0.8);
+    background: linear-gradient(
+        to bottom,
+        rgba(93, 138, 104, 0.9),
+        rgba(80, 125, 91, 0.8)
+    );
     color: white;
     border: none;
     border-radius: var(--border-radius);
     cursor: pointer;
     font-weight: bold;
     transition: all 0.3s ease;
-    box-shadow: 0 3px 7px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 3px 7px rgba(0, 0, 0, 0.15);
     position: relative;
     overflow: hidden;
     font-size: 14px;
@@ -263,7 +283,12 @@ h1::after {
 #game-board {
     width: min(95vmin, 450px);
     aspect-ratio: 1 / 1;
-    background-color: rgba(143, 182, 127, 0.5);
+    background: rgba(143, 182, 127, 0.7);
+    background: linear-gradient(
+        145deg,
+        rgba(143, 182, 127, 0.75),
+        rgba(165, 216, 255, 0.6)
+    );
     border-radius: var(--border-radius);
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -272,9 +297,8 @@ h1::after {
     padding: 2%;
     position: relative;
     margin: 0 auto;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-    border: 2px solid rgba(173, 140, 109, 0.5);
-    backdrop-filter: blur(1px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+    border: 2px solid rgba(173, 140, 109, 0.65);
     box-sizing: border-box;
     flex-grow: 0;
     align-self: center;
@@ -283,13 +307,13 @@ h1::after {
 .grid-cell {
     width: 100%;
     height: 100%;
-    background-color: rgba(255, 255, 255, 0.2);
+    background-color: rgba(255, 255, 255, 0.35);
     border-radius: var(--border-radius);
-    box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.05);
+    box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.1);
     box-sizing: border-box;
 }
 
-/* Update tile to fit perfectly in cells */
+/* Improve tile styles to be more consistent across devices */
 .tile {
     position: absolute;
     border-radius: var(--border-radius);
@@ -303,25 +327,32 @@ h1::after {
                 top 0.2s ease-in-out, 
                 left 0.2s ease-in-out;
     z-index: 10;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.15);
     box-sizing: border-box;
-    backdrop-filter: blur(1px);
-    border: 1px solid rgba(255, 255, 255, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.5);
 }
 
 /* Base Colors */
 .tile.color-red { 
-    background-color: rgba(243, 187, 208, 0.85); 
+    background: linear-gradient(
+        to bottom right,
+        rgba(243, 187, 208, 0.9),
+        rgba(216, 139, 169, 0.85)
+    );
     color: #fff;
-    border: 1px solid rgba(216, 139, 169, 0.5);
-    box-shadow: 0 3px 7px rgba(243, 187, 208, 0.3);
+    border: 1px solid rgba(216, 139, 169, 0.7);
+    box-shadow: 0 3px 7px rgba(243, 187, 208, 0.4);
 }
 .tile.color-blue { 
-    background-color: rgba(130, 196, 245, 0.85); 
+    background: linear-gradient(
+        to bottom right,
+        rgba(130, 196, 245, 0.9),
+        rgba(90, 158, 208, 0.85)
+    );
     color: #fff; 
-    border: 1px solid rgba(90, 158, 208, 0.5);
-    box-shadow: 0 3px 7px rgba(130, 196, 245, 0.3);
+    border: 1px solid rgba(90, 158, 208, 0.7);
+    box-shadow: 0 3px 7px rgba(130, 196, 245, 0.4);
 }
 
 /* Value-specific styles with responsive font sizes and gradients */
@@ -856,4 +887,32 @@ body::after {
     background-color: rgba(93, 138, 104, 0.8);
     transform: translateY(-2px);
     box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Mobile-specific customizations */
+@media (max-width: 768px) {
+    /* Use solid colors with slight transparency for better mobile rendering */
+    .container {
+        background: rgba(255, 255, 255, 0.92);
+    }
+    
+    #game-board {
+        background: rgba(143, 182, 127, 0.85);
+    }
+    
+    .score-container, .combo-container {
+        background-color: rgba(249, 242, 227, 0.92);
+    }
+    
+    .grid-cell {
+        background-color: rgba(255, 255, 255, 0.5);
+    }
+    
+    .tile.color-red { 
+        background-color: rgba(243, 187, 208, 0.95); 
+    }
+    
+    .tile.color-blue { 
+        background-color: rgba(130, 196, 245, 0.95); 
+    }
 } 
