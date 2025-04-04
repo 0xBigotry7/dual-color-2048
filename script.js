@@ -692,8 +692,8 @@ document.addEventListener('DOMContentLoaded', () => {
             alert('No color change moves left or game over!');
             return;
         }
-        const row = prompt(`Enter row number to change color (0-5). Moves left: ${colorChangeMoves}`);
-        const rowIndex = parseInt(row);
+        const row = prompt(`Enter row number to change color (1-6). Moves left: ${colorChangeMoves}`);
+        const rowIndex = parseInt(row) - 1; // Convert from 1-based (UI) to 0-based (internal)
         if (!isNaN(rowIndex) && rowIndex >= 0 && rowIndex < gridSize) {
             let changed = false;
             for(let c = 0; c < gridSize; c++) {
@@ -713,7 +713,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 alert('Row is empty, no change made.');
             }
         } else {
-            alert('Invalid row number.');
+            alert('Invalid row number. Please enter a number between 1 and 6.');
         }
     });
 
@@ -722,8 +722,8 @@ document.addEventListener('DOMContentLoaded', () => {
             alert('No color change moves left or game over!');
             return;
         }
-        const col = prompt(`Enter column number to change color (0-5). Moves left: ${colorChangeMoves}`);
-        const colIndex = parseInt(col);
+        const col = prompt(`Enter column number to change color (1-6). Moves left: ${colorChangeMoves}`);
+        const colIndex = parseInt(col) - 1; // Convert from 1-based (UI) to 0-based (internal)
         if (!isNaN(colIndex) && colIndex >= 0 && colIndex < gridSize) {
             let changed = false;
             for(let r = 0; r < gridSize; r++) {
@@ -741,7 +741,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 alert('Column is empty, no change made.');
             }
         } else {
-            alert('Invalid column number.');
+            alert('Invalid column number. Please enter a number between 1 and 6.');
         }
     });
 
