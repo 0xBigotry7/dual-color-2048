@@ -39,9 +39,10 @@ html, body {
 body {
     background-image: url('bg.png');
     background-size: cover;
-    background-position: center;
+    background-position: center center;
     background-repeat: no-repeat;
     background-attachment: fixed;
+    background-color: var(--ghibli-sky); /* Fallback color */
     color: #333;
     display: flex;
     justify-content: center;
@@ -49,6 +50,13 @@ body {
     min-height: 100vh;
     padding: 0;
     margin: 0;
+}
+
+/* Fix background image for iOS */
+@media (max-width: 768px) {
+    body {
+        background-attachment: scroll;
+    }
 }
 
 /* Remove the decorative elements since we're using a real background image */
@@ -89,7 +97,7 @@ html, body {
     border-radius: var(--border-radius);
     box-shadow: var(--box-shadow);
     max-width: 500px;
-    width: calc(100% - 30px);
+    width: 95%;
     max-height: 95vh;
     overflow: hidden;
     backdrop-filter: blur(2px);
@@ -97,11 +105,11 @@ html, body {
     border: 2px solid rgba(173, 140, 109, 0.6);
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
 }
 
-/* Language selector button - moved to top left for better visibility */
+/* Language selector button - moved for better mobile placement */
 .language-toggle {
     position: fixed;
     top: 20px;
@@ -123,7 +131,7 @@ html, body {
     font-size: 16px;
 }
 
-/* Info button styling - improved positioning */
+/* Info button styling - improved positioning for mobile */
 .info-button {
     position: fixed;
     top: 20px;
@@ -142,7 +150,7 @@ html, body {
     z-index: 100;
 }
 
-/* Fix header layout for better alignment */
+/* Make header more compact on mobile */
 .header {
     display: flex;
     flex-wrap: wrap;
@@ -150,11 +158,12 @@ html, body {
     margin-bottom: 10px;
     position: relative;
     width: 100%;
+    gap: 10px;
 }
 
 h1 {
-    font-size: 2rem;
-    margin: 0 0 10px 0;
+    font-size: min(2rem, 7vw);
+    margin: 0 0 5px 0;
     color: var(--ghibli-forest);
     font-weight: 700;
     text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.7);
@@ -173,17 +182,17 @@ h1::after {
     border-radius: 3px;
 }
 
-/* Make sure score and combo display properly */
+/* Optimize for mobile-first approach */
 .score-container, .combo-container {
     background-color: rgba(249, 242, 227, 0.7);
-    padding: 12px 15px;
+    padding: 8px 12px;
     border-radius: var(--border-radius);
     font-weight: bold;
     box-shadow: 0 3px 7px rgba(0, 0, 0, 0.1);
     border: 1px solid rgba(173, 140, 109, 0.4);
     color: var(--ghibli-dark);
     flex: 1;
-    margin: 5px;
+    margin: 3px;
     max-width: 45%;
     transition: transform 0.2s;
     display: flex;
@@ -197,27 +206,28 @@ h1::after {
 }
 
 .score-container .label, .combo-container .label, .moves-container .label {
-    font-size: 14px;
+    font-size: 12px;
     color: var(--ghibli-dark);
     opacity: 0.8;
     margin-bottom: 5px;
 }
 
 .score-container .value, .combo-container .value, .moves-container .value {
-    font-size: 22px;
+    font-size: 18px;
     font-weight: 700;
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-/* Update controls section for better layout */
+/* Make controls more compact */
 .controls {
-    margin-bottom: 15px;
+    margin-bottom: 10px;
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 8px;
     position: relative;
+    width: 100%;
 }
 
 .moves-container {
@@ -249,9 +259,9 @@ h1::after {
     font-size: 14px;
 }
 
-/* Center the game board more specifically */
+/* Center the game board and make it larger */
 #game-board {
-    width: 100%;
+    width: min(95vmin, 450px);
     aspect-ratio: 1 / 1;
     background-color: rgba(143, 182, 127, 0.5);
     border-radius: var(--border-radius);
@@ -261,12 +271,11 @@ h1::after {
     gap: 2%;
     padding: 2%;
     position: relative;
-    margin: 15px auto;
+    margin: 0 auto;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     border: 2px solid rgba(173, 140, 109, 0.5);
     backdrop-filter: blur(1px);
     box-sizing: border-box;
-    max-width: min(90vw, 90vh, 400px);
     flex-grow: 0;
     align-self: center;
 }
@@ -455,52 +464,97 @@ h1::after {
 /* Mobile optimizations */
 @media (max-width: 500px) {
     .container {
-        padding: 15px;
-        margin: 0 10px;
+        padding: 10px;
+        width: 98%;
     }
     
     h1 {
-        font-size: 1.6rem;
+        font-size: 1.5rem;
+        margin-bottom: 3px;
     }
     
     .score-container, .combo-container, .controls button {
-        padding: 8px 10px;
+        padding: 6px 8px;
         font-size: 14px;
     }
     
-    #game-board {
-        width: calc(4 * 60px + 5 * 8px);
-        height: calc(4 * 60px + 5 * 8px);
-        gap: 8px;
-        padding: 8px;
-    }
-    
-    .grid-cell, .tile {
-        width: 60px;
-        height: 60px;
-    }
-    
-    :root {
-        --tile-size: 60px;
-        --tile-spacing: 8px;
-    }
-    
-    /* Ensure instructions are readable on small screens */
-    .instructions {
+    .score-container .label, .combo-container .label, .moves-container .label {
         font-size: 12px;
-        padding: 10px;
     }
     
-    /* Stack score containers on very small screens */
-    @media (max-width: 350px) {
-        .header {
-            flex-direction: column;
-        }
-        
-        .score-container, .combo-container {
-            max-width: 80%;
-            margin: 5px auto;
-        }
+    .score-container .value, .combo-container .value, .moves-container .value {
+        font-size: 18px;
+    }
+    
+    /* Make info and language buttons slightly smaller and closer to edges on small screens */
+    .language-toggle, .info-button {
+        width: 36px;
+        height: 36px;
+        font-size: 14px;
+        top: 10px;
+    }
+    
+    .language-toggle {
+        left: 10px;
+    }
+    
+    .info-button {
+        right: 10px;
+    }
+    
+    /* Ensure the modal shows properly on mobile */
+    .modal-content {
+        margin: 15% auto;
+        width: 90%;
+        padding: 15px;
+    }
+}
+
+/* Special adjustment for very small screens */
+@media (max-width: 350px) {
+    .header {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .score-container, .combo-container {
+        max-width: 80%;
+        margin: 3px auto;
+    }
+    
+    h1 {
+        font-size: 1.3rem;
+    }
+    
+    /* Make controls stack on very small screens */
+    .controls {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Ensure proper display in landscape mode */
+@media (max-height: 500px) and (orientation: landscape) {
+    .container {
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: center;
+        max-height: 98vh;
+    }
+    
+    .header {
+        width: 25%;
+        height: min-content;
+        flex-direction: column;
+    }
+    
+    #game-board {
+        width: min(70vh, 450px);
+        margin: 0;
+    }
+    
+    .controls {
+        width: 25%;
+        height: min-content;
     }
 }
 
@@ -628,8 +682,8 @@ h1, .score-container, .combo-container, .moves-container, .instructions p {
 
 .modal-content {
     background-color: rgba(249, 242, 227, 0.85);
-    margin: 10% auto;
-    padding: 20px;
+    margin: 15% auto;
+    padding: 15px;
     border: 2px solid rgba(173, 140, 109, 0.6);
     border-radius: var(--border-radius);
     width: 85%;
@@ -665,26 +719,6 @@ h1, .score-container, .combo-container, .moves-container, .instructions p {
     line-height: 1.5;
     color: var(--ghibli-dark);
     text-shadow: 0 1px 1px rgba(255, 255, 255, 0.5);
-}
-
-/* Special adjustment for landscape orientation on mobile */
-@media (max-height: 500px) and (orientation: landscape) {
-    .container {
-        padding: 10px;
-    }
-    
-    h1 {
-        font-size: 1.4rem;
-        margin-bottom: 5px;
-    }
-    
-    .header {
-        margin-bottom: 10px;
-    }
-    
-    .controls {
-        margin-bottom: 10px;
-    }
 }
 
 /* Add Ghibli-inspired decorative elements */

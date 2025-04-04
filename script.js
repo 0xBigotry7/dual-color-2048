@@ -150,12 +150,16 @@ document.addEventListener('DOMContentLoaded', () => {
          tileElement.style.width = `${tileSize}px`;
          tileElement.style.height = `${tileSize}px`;
          
-         // Position the tile with spacing on all sides
+         // Position the tile with proper spacing for centering
          const top = (r * cellHeight) + spacing;
          const left = (c * cellWidth) + spacing;
          
          tileElement.style.top = `${top}px`;
          tileElement.style.left = `${left}px`;
+         
+         // Adjust font size based on the tile size for better readability on mobile
+         const fontSize = tileSize * 0.45;
+         tileElement.style.fontSize = `${Math.min(fontSize, 30)}px`;
      }
 
     // --- Game State Updates ---
@@ -734,8 +738,29 @@ document.addEventListener('DOMContentLoaded', () => {
         this.resizeTimeout = setTimeout(() => {
             console.log('Window resized, updating board visuals');
             updateBoardVisuals();
+            
+            // Force reposition of all tiles after resize
+            const allTiles = document.querySelectorAll('.tile');
+            allTiles.forEach(tile => {
+                const tileData = getTileDataById(tile.dataset.id);
+                if (tileData) {
+                    positionTile(tile, tileData.r, tileData.c);
+                }
+            });
         }, 250);
     });
+
+    // Helper to find tile data by id
+    function getTileDataById(id) {
+        for (let r = 0; r < gridSize; r++) {
+            for (let c = 0; c < gridSize; c++) {
+                if (board[r][c] && board[r][c].id.toString() === id) {
+                    return board[r][c];
+                }
+            }
+        }
+        return null;
+    }
 
     // Modal functionality
     const modal = document.getElementById('instructions-modal');
