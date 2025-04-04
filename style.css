@@ -1,0 +1,764 @@
+/* Ghibli-inspired color palette */
+:root {
+    --ghibli-sky: #a5d8ff;
+    --ghibli-forest: #5d8a68;
+    --ghibli-meadow: #8fb67f;
+    --ghibli-cream: #f9f2e3;
+    --ghibli-soil: #ad8c6d;
+    --ghibli-sunset: #ffb670;
+    --ghibli-water: #82c4f5;
+    --ghibli-cloud: #f9fcff;
+    --ghibli-pink: #f3bbd0;
+    --ghibli-dark: #3e4a41;
+    --tile-size: 67.5px;
+    --tile-spacing: 10px;
+    --border-radius: 12px;
+    --box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+body {
+    font-family: 'Quicksand', sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+    padding: 20px;
+    touch-action: manipulation; /* Prevent zooming on touch devices */
+    /* Fallback gradient in case image doesn't load */
+    background-color: var(--ghibli-sky);
+    background-image: url('bg.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    color: var(--ghibli-dark);
+    position: relative;
+    overflow-x: hidden;
+}
+
+/* Remove the decorative elements since we're using a real background image */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADIAAAAyCAYAAAAeP4ixAAAEDklEQVRogX2aW27kOgxEy4vJ/ncz85H5aAMFgqZOQaRkWwRBNmX58PD29vb29vP19eU/n5+f/vP+/u72/f3dlvf3d3++vr7c/vj48Of7+9vXz89P9/E+P+PNMV/tmGs+xo/1+fn5aXue67rultq0r+u6fb6/v7t9XVfbnJfaxP/6+ton7rWvdbZd19U2+p6fn/18fn62jb3ShnV+z/dz3whHbeyVDZ/jNxk+Pj5shG3i1mf8h5TTcOUT//X11TZ6EXue64qBdFrnvs/r+/HbQX65YX0x5meMFEgHbcyHj7HuiZB9jOX5WGcscTHHfDF+jCUW4zbWmedjHb0sZM6J3zrW2RMDY631NceUWr9Ye+VNQsTe+3Vdt+8xxrxQ5lzGZK+xh4XsD8ZZB6Jif/Kv6xobNtY+eCbCwjoQl3mJn1ixEA/xYY84ss/bVgezwDkmNM/Jy3qQYb7i5jlrWTt+co0YM0+elzVlDdnLb0SqsZklWwgbZt/n19eXm5hbH3h4g4XGnM81EbHQxNBzxtZaKKIXHxGZv9T6RdvxJ4Z5KTdcE0PW7b9lSQzMwRwx4TMGXGNu4vRzfZjrE7YJlkz4HFvMcy9jkW+e12eNWcv+M8btj/rCOu/rIgqmgAIYE9YkhvjNZ/xESN4xZ37mkEkssTGumI+9/LGW9RJv/KktjNk3vz/MI5lc40HUlVDWzb+wNkEQ0XwiHn4xnpj67c49LPzxoab5HX+Mk1/O8bPO2vnwt6RCELHEgvWbGGI+rJ8mpmOHOGPAWvnFuhEjMeW3NPaLOfbKh3jz3xLCOGMGEgnhnIuYIwbWG/OTL2vE1hJoHYfzYW3EytpZF37WTYysfc5LbWp9k4I4JJYUDzFSYhGZmCC+rDF/xE8sxcn8jMlaYxEn+4mZtedDnOxnnvuISAIQYO97iKAbiEDsrXkQTExLADHnM8dljGMtMcYlprm312bN5nvUFvyWUxJPApBoJI71i0RYMiXO5pxY1l4sxPesn7FiZ08+7O+9zPVoIyScmiFRJJLEsbVaSk+MJS/x4L88Y53Y+o0/lvgxj2OZB//Em3OyL2tDAmG+WiPBSJiYilWJtbfWzZuxE2c+4pAA1o0EGWvEsM4/a2deYoMPa32slV+tpZjAr9YICSNBJMzaM0M8fMa3vZpAYmNLTLFO/K3XiLExY+VTzKyF9dWxqZrjZ6zOOTWkH/7LF5IsYbFQYkiINctaIoiBGLHnWGsua8v7EwP+iTPWrFN6GcMY/JNf9JJbTGppxTyJtfYbSs1QC1iLNSVi7Uu0mHIMYu1vlqwpa0ZsYmrrHfGKX2umOtdFffxFhOnWnNqQcGsG53uT9YoN60XiiS/7iQVjHTvExH5xMY8lmViIu1iyLybiL870sv9/8PDhwy9hD8EAAAAASUVORK5CYII=');
+    opacity: 0.04;
+    z-index: -1;
+    pointer-events: none;
+}
+
+body::after {
+    display: none;
+}
+
+/* Make body use the full viewport height on mobile */
+html, body {
+    height: 100%;
+    width: 100%;
+    box-sizing: border-box;
+    overscroll-behavior: none; /* Prevent pull-to-refresh */
+}
+
+/* Update container to be more mobile-friendly */
+.container {
+    text-align: center;
+    background-color: rgba(255, 255, 255, 0.7);
+    padding: 15px;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    max-width: 500px;
+    width: calc(100% - 30px);
+    backdrop-filter: blur(2px);
+    position: relative;
+    z-index: 1;
+    border: 2px solid rgba(173, 140, 109, 0.6);
+    margin: 0 auto;
+}
+
+/* Adjust the header for better mobile view */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+}
+
+h1 {
+    font-size: 2rem;
+    margin: 0 0 10px 0;
+    color: var(--ghibli-forest);
+    font-weight: 700;
+    text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.7);
+    width: 100%;
+    text-align: center;
+    letter-spacing: 0.5px;
+}
+
+h1::after {
+    content: '';
+    display: block;
+    width: 50%;
+    height: 2px;
+    background-color: rgba(143, 182, 127, 0.6);
+    margin: 8px auto 0;
+    border-radius: 3px;
+}
+
+.score-container, .combo-container {
+    background-color: rgba(249, 242, 227, 0.7);
+    padding: 12px 15px;
+    border-radius: var(--border-radius);
+    font-weight: bold;
+    box-shadow: 0 3px 7px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(173, 140, 109, 0.4);
+    color: var(--ghibli-dark);
+    flex: 1;
+    margin: 5px;
+    max-width: 45%;
+    transition: transform 0.2s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.score-container:hover, .combo-container:hover {
+    transform: translateY(-2px);
+}
+
+.score-container .label, .combo-container .label, .moves-container .label {
+    font-size: 14px;
+    color: var(--ghibli-dark);
+    opacity: 0.8;
+    margin-bottom: 5px;
+}
+
+.score-container .value, .combo-container .value, .moves-container .value {
+    font-size: 22px;
+    font-weight: 700;
+}
+
+/* Update controls section for better layout */
+.controls {
+    margin-bottom: 15px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    position: relative;
+}
+
+.moves-container {
+    grid-column: 1 / -1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: rgba(249, 242, 227, 0.7);
+    padding: 10px;
+    border-radius: var(--border-radius);
+    font-weight: bold;
+    border: 1px solid rgba(173, 140, 109, 0.4);
+    box-shadow: 0 3px 7px rgba(0, 0, 0, 0.1);
+    margin-bottom: 8px;
+}
+
+.controls button {
+    padding: 10px;
+    background-color: rgba(93, 138, 104, 0.8);
+    color: white;
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    box-shadow: 0 3px 7px rgba(0, 0, 0, 0.1);
+    position: relative;
+    overflow: hidden;
+    font-size: 14px;
+}
+
+/* Info button styling */
+.info-button {
+    position: absolute;
+    top: 0;
+    right: -45px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--ghibli-soil);
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    box-shadow: var(--box-shadow);
+}
+
+.info-button:hover {
+    background-color: var(--ghibli-forest);
+    transform: scale(1.1);
+}
+
+/* Make game board responsive and ensure perfect alignment */
+#game-board {
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    background-color: rgba(143, 182, 127, 0.5);
+    border-radius: var(--border-radius);
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(4, 1fr);
+    gap: 2%;
+    padding: 2%;
+    position: relative;
+    margin: 0 auto;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+    border: 2px solid rgba(173, 140, 109, 0.5);
+    backdrop-filter: blur(1px);
+    box-sizing: border-box;
+}
+
+.grid-cell {
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255, 255, 255, 0.2);
+    border-radius: var(--border-radius);
+    box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.05);
+    box-sizing: border-box;
+}
+
+/* Update tile to fit perfectly in cells */
+.tile {
+    position: absolute;
+    border-radius: var(--border-radius);
+    font-weight: bold;
+    font-size: min(22px, 6vw);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: transform 0.2s ease-in-out, 
+                background-color 0.2s ease-in-out, 
+                top 0.2s ease-in-out, 
+                left 0.2s ease-in-out;
+    z-index: 10;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.1);
+    box-sizing: border-box;
+    backdrop-filter: blur(1px);
+    border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+/* Base Colors */
+.tile.color-red { 
+    background-color: rgba(243, 187, 208, 0.85); 
+    color: #fff;
+    border: 1px solid rgba(216, 139, 169, 0.5);
+    box-shadow: 0 3px 7px rgba(243, 187, 208, 0.3);
+}
+.tile.color-blue { 
+    background-color: rgba(130, 196, 245, 0.85); 
+    color: #fff; 
+    border: 1px solid rgba(90, 158, 208, 0.5);
+    box-shadow: 0 3px 7px rgba(130, 196, 245, 0.3);
+}
+
+/* Value-specific styles with responsive font sizes and gradients */
+.tile[data-value="2"] { 
+    font-size: min(35px, 7vw); 
+    background-image: linear-gradient(135deg, rgba(255,255,255,0.2), transparent);
+}
+.tile[data-value="4"] { 
+    font-size: min(35px, 7vw); 
+    background-image: linear-gradient(135deg, rgba(255,255,255,0.2), transparent);
+}
+.tile[data-value="8"] { 
+    font-size: min(35px, 7vw); 
+    background-image: linear-gradient(135deg, rgba(255,255,255,0.2), transparent);
+}
+.tile[data-value="16"] { 
+    font-size: min(30px, 6vw); 
+    background-image: linear-gradient(135deg, rgba(255,255,255,0.2), transparent);
+}
+.tile[data-value="32"] { 
+    font-size: min(30px, 6vw); 
+    background-image: linear-gradient(135deg, rgba(255,255,255,0.2), transparent);
+}
+.tile[data-value="64"] { 
+    font-size: min(30px, 6vw); 
+    background-image: linear-gradient(135deg, rgba(255,255,255,0.2), transparent);
+}
+.tile[data-value="128"] { 
+    font-size: min(25px, 5vw); 
+    background-image: linear-gradient(135deg, rgba(255,255,255,0.2), transparent);
+}
+.tile[data-value="256"] { 
+    font-size: min(25px, 5vw); 
+    background-image: linear-gradient(135deg, rgba(255,255,255,0.2), transparent);
+}
+.tile[data-value="512"] { 
+    font-size: min(25px, 5vw); 
+    background-image: linear-gradient(135deg, rgba(255,255,255,0.2), transparent);
+}
+.tile[data-value="1024"] { 
+    font-size: min(20px, 4vw); 
+    background-image: linear-gradient(135deg, rgba(255,255,255,0.2), transparent);
+}
+.tile[data-value="2048"] { 
+    font-size: min(20px, 4vw); 
+    background-color: rgba(255, 182, 112, 0.9);
+    color: #ffffff; 
+    border: 2px solid rgba(255, 154, 21, 0.7);
+    box-shadow: 0 0 15px rgba(255, 182, 112, 0.5);
+}
+
+/* Special Tiles */
+.tile.wildcard { 
+    background-color: rgba(62, 74, 65, 0.85);
+    color: #f9f6f2;
+    border: 2px solid rgba(255, 215, 0, 0.7);
+    box-shadow: 0 0 12px rgba(255, 215, 0, 0.3);
+}
+
+.tile.converter { 
+    box-shadow: 0 0 0 2px rgba(60, 58, 50, 0.5) inset, 0 3px 7px rgba(0, 0, 0, 0.15);
+    position: relative;
+}
+
+.tile.converter::after {
+    content: '';
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    width: 16px;
+    height: 16px;
+    background-color: white;
+    border-radius: 50%;
+    border: 2px solid var(--ghibli-dark);
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.3);
+}
+
+/* Tile animations */
+.tile {
+    animation: appear 0.2s ease-in-out;
+}
+
+@keyframes appear {
+    0% { transform: scale(0); }
+    50% { transform: scale(1.1); }
+    100% { transform: scale(1); }
+}
+
+/* Game Over Message */
+#game-over-message {
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    background-color: rgba(249, 242, 227, 0.75);
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    border-radius: var(--border-radius);
+    backdrop-filter: blur(4px);
+}
+
+#game-over-message h2 {
+    font-size: 40px;
+    color: var(--ghibli-forest);
+    margin-bottom: 20px;
+    text-shadow: 2px 2px 0 rgba(255, 255, 255, 0.5);
+}
+
+#game-over-message p {
+    font-size: 24px;
+    color: var(--ghibli-dark);
+    margin-bottom: 30px;
+}
+
+#restart-button {
+    padding: 15px 30px;
+    background-color: var(--ghibli-forest);
+    color: white;
+    border: none;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-size: 20px;
+    font-weight: bold;
+    box-shadow: var(--box-shadow);
+    transition: all 0.2s;
+}
+
+#restart-button:hover {
+    background-color: var(--ghibli-soil);
+    transform: translateY(-2px);
+}
+
+#restart-button:active {
+    transform: translateY(1px);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* Mobile optimizations */
+@media (max-width: 500px) {
+    .container {
+        padding: 15px;
+        margin: 0 10px;
+    }
+    
+    h1 {
+        font-size: 1.6rem;
+    }
+    
+    .score-container, .combo-container, .controls button {
+        padding: 8px 10px;
+        font-size: 14px;
+    }
+    
+    #game-board {
+        width: calc(4 * 60px + 5 * 8px);
+        height: calc(4 * 60px + 5 * 8px);
+        gap: 8px;
+        padding: 8px;
+    }
+    
+    .grid-cell, .tile {
+        width: 60px;
+        height: 60px;
+    }
+    
+    :root {
+        --tile-size: 60px;
+        --tile-spacing: 8px;
+    }
+    
+    /* Ensure instructions are readable on small screens */
+    .instructions {
+        font-size: 12px;
+        padding: 10px;
+    }
+    
+    /* Stack score containers on very small screens */
+    @media (max-width: 350px) {
+        .header {
+            flex-direction: column;
+        }
+        
+        .score-container, .combo-container {
+            max-width: 80%;
+            margin: 5px auto;
+        }
+    }
+}
+
+/* Instructions section styling */
+.instructions {
+    margin-top: 20px;
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: var(--border-radius);
+    padding: 15px;
+    font-size: 14px;
+    border: 2px solid var(--ghibli-soil);
+    box-shadow: var(--box-shadow);
+    line-height: 1.5;
+}
+
+.instructions p {
+    margin: 8px 0;
+    color: var(--ghibli-dark);
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5);
+}
+
+.emoji {
+    font-size: 18px;
+    margin-right: 5px;
+    vertical-align: middle;
+    display: inline-block;
+    background-color: var(--ghibli-dark);
+    color: white;
+    width: 24px;
+    height: 24px;
+    text-align: center;
+    line-height: 24px;
+    border-radius: 50%;
+}
+
+.instructions p:nth-child(2) .emoji {
+    background-color: var(--ghibli-dark);
+    border: 1px solid gold;
+}
+
+.instructions p:nth-child(3) .emoji {
+    background-color: white;
+    color: var(--ghibli-dark);
+    border: 2px solid var(--ghibli-dark);
+}
+
+/* Make sure the moves container aligns with the new structure */
+.moves-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: rgba(249, 242, 227, 0.7);
+    padding: 12px 15px;
+    border-radius: var(--border-radius);
+    font-weight: bold;
+    border: 1px solid rgba(173, 140, 109, 0.4);
+    box-shadow: 0 3px 7px rgba(0, 0, 0, 0.1);
+    flex: 1;
+    max-width: 100%;
+    margin: 5px;
+}
+
+/* Enhance the tiles with subtle hover effects */
+.tile:hover {
+    transform: scale(1.05);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.25);
+    z-index: 20;
+}
+
+/* Add a subtle pulse animation to special tiles */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.tile.wildcard, .tile.converter {
+    animation: pulse 2s infinite ease-in-out;
+}
+
+/* Add a subtle shadow to text for better readability */
+h1, .score-container, .combo-container, .moves-container, .instructions p {
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5);
+}
+
+/* Add subtle transition to color change buttons */
+.controls button:hover {
+    background-color: rgba(173, 140, 109, 0.8);
+    transform: translateY(-2px);
+}
+
+.controls button:active {
+    transform: translateY(1px);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.controls button:after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -60%;
+    width: 200%;
+    height: 200%;
+    background: rgba(255, 255, 255, 0.2);
+    transform: rotate(30deg);
+    transition: transform 0.4s ease;
+}
+
+.controls button:hover:after {
+    transform: rotate(30deg) translate(15%, 15%);
+}
+
+/* Modal styling for instructions */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 100;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(3px);
+}
+
+.modal-content {
+    background-color: rgba(249, 242, 227, 0.85);
+    margin: 10% auto;
+    padding: 20px;
+    border: 2px solid rgba(173, 140, 109, 0.6);
+    border-radius: var(--border-radius);
+    width: 85%;
+    max-width: 450px;
+    box-shadow: var(--box-shadow);
+    position: relative;
+    backdrop-filter: blur(3px);
+}
+
+.close-button {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    color: var(--ghibli-dark);
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close-button:hover {
+    color: var(--ghibli-forest);
+}
+
+.modal-content h2 {
+    color: var(--ghibli-forest);
+    margin-top: 0;
+    margin-bottom: 15px;
+    text-align: center;
+}
+
+.modal-content p {
+    margin: 10px 0;
+    line-height: 1.5;
+    color: var(--ghibli-dark);
+    text-shadow: 0 1px 1px rgba(255, 255, 255, 0.5);
+}
+
+/* Special adjustment for landscape orientation on mobile */
+@media (max-height: 500px) and (orientation: landscape) {
+    .container {
+        padding: 10px;
+    }
+    
+    h1 {
+        font-size: 1.4rem;
+        margin-bottom: 5px;
+    }
+    
+    .header {
+        margin-bottom: 10px;
+    }
+    
+    .controls {
+        margin-bottom: 10px;
+    }
+}
+
+/* Add Ghibli-inspired decorative elements */
+.container::before {
+    content: '';
+    position: absolute;
+    bottom: -15px;
+    right: -15px;
+    width: 30px;
+    height: 30px;
+    background-color: rgba(143, 182, 127, 0.7);
+    border-radius: 50%;
+    z-index: -1;
+}
+
+.container::after {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: -10px;
+    width: 20px;
+    height: 20px;
+    background-color: rgba(130, 196, 245, 0.7);
+    border-radius: 50%;
+    z-index: -1;
+}
+
+/* Add subtle floating dust sprites */
+@keyframes float {
+    0% { transform: translateY(0) rotate(0); opacity: 0.5; }
+    50% { transform: translateY(-15px) rotate(5deg); opacity: 0.7; }
+    100% { transform: translateY(-30px) rotate(0); opacity: 0; }
+}
+
+@keyframes float-reverse {
+    0% { transform: translateY(0) rotate(0); opacity: 0.5; }
+    50% { transform: translateY(-10px) rotate(-3deg); opacity: 0.7; }
+    100% { transform: translateY(-20px) rotate(0); opacity: 0; }
+}
+
+body::after {
+    content: '';
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 100%;
+    height: 100%;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='rgba(143, 182, 127, 0.7)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3a9 9 0 0 0-9 9H2l4 4 4-4H9a3 3 0 0 1 3-3V3z'/%3E%3C/svg%3E"), 
+                       url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='8' viewBox='0 0 24 24' fill='none' stroke='rgba(130, 196, 245, 0.7)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z'/%3E%3Cline x1='7' y1='7' x2='7.01' y2='7'/%3E%3C/svg%3E"),
+                       url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='6' height='6' viewBox='0 0 24 24' fill='none' stroke='rgba(243, 187, 208, 0.7)' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 18l6-6-6-6'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+    background-position: 0 0, 30px 30px, 60px 15px;
+    z-index: -1;
+    pointer-events: none;
+    opacity: 0.2;
+}
+
+/* Add soot sprites (dust balls) */
+.dust-sprite {
+    position: fixed;
+    width: 8px;
+    height: 8px;
+    background-color: rgba(62, 74, 65, 0.3);
+    border-radius: 50%;
+    z-index: -1;
+}
+
+.dust-sprite:nth-child(1) {
+    bottom: 10%;
+    left: 10%;
+    animation: float 8s infinite linear;
+}
+
+.dust-sprite:nth-child(2) {
+    bottom: 15%;
+    right: 15%;
+    animation: float-reverse 12s infinite linear;
+}
+
+.dust-sprite:nth-child(3) {
+    bottom: 20%;
+    left: 50%;
+    animation: float 10s infinite linear;
+}
+
+.dust-sprite:nth-child(4) {
+    bottom: 25%;
+    right: 30%;
+    animation: float-reverse 9s infinite linear;
+}
+
+/* Add visual effects to create a more magical Ghibli feel */
+#game-board::before {
+    content: '';
+    position: absolute;
+    top: -5px;
+    left: -5px;
+    right: -5px;
+    bottom: -5px;
+    background: linear-gradient(45deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0) 100%);
+    border-radius: calc(var(--border-radius) + 5px);
+    z-index: -1;
+    animation: rotating 10s linear infinite;
+}
+
+@keyframes rotating {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Animated hover effect for tiles */
+.tile:hover {
+    transform: scale(1.05);
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Soften the hover effect on buttons */
+.score-container:hover, .combo-container:hover {
+    transform: translateY(-2px);
+    animation: float-gentle 3s infinite ease-in-out;
+}
+
+@keyframes float-gentle {
+    0%, 100% { transform: translateY(0) rotate(0); }
+    50% { transform: translateY(-5px) rotate(0.5deg); }
+} 

@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Studio Ghibli Dual Color 2048</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Add dust sprites for Ghibli atmosphere -->
+    <div class="dust-sprite"></div>
+    <div class="dust-sprite"></div>
+    <div class="dust-sprite"></div>
+    <div class="dust-sprite"></div>
+    
+    <div class="container">
+        <div class="header">
+            <h1>Ghibli Dual Color 2048</h1>
+            <div class="score-container">
+                <div class="label">Score</div>
+                <div class="value"><span id="score">0</span></div>
+            </div>
+            <div class="combo-container">
+                <div class="label">Combo</div>
+                <div class="value"><span id="combo-multiplier">1</span>x</div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <p class="moves-container">
+                <span class="label">Color Changes</span>
+                <span class="value" id="moves-left">5</span>
+            </p>
+            <button id="change-row-btn">Change Row Color</button>
+            <button id="change-col-btn">Change Col Color</button>
+            <button id="info-btn" class="info-button">
+                <i class="fas fa-info-circle"></i>
+            </button>
+        </div>
+        
+        <div id="game-board">
+            <!-- Tiles will be generated here by JavaScript -->
+        </div>
+        
+        <div id="instructions-modal" class="modal">
+            <div class="modal-content">
+                <span class="close-button">&times;</span>
+                <h2>How to Play</h2>
+                <p>Swipe or use arrow keys to move tiles. Match same-colored tiles to merge them!</p>
+                <p><span class="emoji">★</span> = Wildcard (merges with any color)</p>
+                <p><span class="emoji">◎</span> = Converter (changes adjacent colors)</p>
+                <p>When tiles with values of 32 or 256 are created, they change color!</p>
+                <p>Use color change buttons to flip colors of rows or columns (limited uses).</p>
+            </div>
+        </div>
+         
+        <div id="game-over-message" style="display: none;">
+            <h2>Game Over!</h2>
+            <p>Final Score: <span id="final-score">0</span></p>
+            <button id="restart-button">Play Again</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html> 
