@@ -142,8 +142,22 @@ document.addEventListener('DOMContentLoaded', () => {
          const cellWidth = boardRect.width / gridSize;
          const cellHeight = boardRect.height / gridSize;
          
-         // Calculate the exact position with proper offset for centering
-         const spacing = cellWidth * 0.015; // 1.5% spacing for smaller cells
+         // Calculate the exact position with proper spacing for centering
+         // On mobile, use smaller spacing for tighter grid
+         const isMobile = window.innerWidth <= 500;
+         const isVerySmall = window.innerWidth <= 350;
+         
+         // Adjust spacing based on screen size
+         let spacingPercentage;
+         if (isVerySmall) {
+             spacingPercentage = 0.008; // 0.8% for very small screens
+         } else if (isMobile) {
+             spacingPercentage = 0.01; // 1% for mobile
+         } else {
+             spacingPercentage = 0.015; // 1.5% for desktop
+         }
+         
+         const spacing = cellWidth * spacingPercentage;
          const tileSize = cellWidth - (spacing * 2);
          
          // Set the tile size directly
@@ -157,9 +171,19 @@ document.addEventListener('DOMContentLoaded', () => {
          tileElement.style.top = `${top}px`;
          tileElement.style.left = `${left}px`;
          
-         // Adjust font size based on the tile size for better readability
-         const fontSize = tileSize * 0.4; // Slightly smaller font size for 6x6
-         tileElement.style.fontSize = `${Math.min(fontSize, 26)}px`;
+         // Adjust font size based on the tile size and screen size
+         let fontSizeMultiplier;
+         if (isVerySmall) {
+             fontSizeMultiplier = 0.35; // Smaller font for very small screens
+         } else if (isMobile) {
+             fontSizeMultiplier = 0.38; // Slightly larger for mobile
+         } else {
+             fontSizeMultiplier = 0.4; // Normal size for desktop
+         }
+         
+         const fontSize = tileSize * fontSizeMultiplier;
+         const maxFontSize = isVerySmall ? 20 : (isMobile ? 22 : 26);
+         tileElement.style.fontSize = `${Math.min(fontSize, maxFontSize)}px`;
      }
 
     // --- Game State Updates ---

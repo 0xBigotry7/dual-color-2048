@@ -101,12 +101,12 @@ html, body {
         rgba(255, 255, 255, 0.85),
         rgba(249, 242, 227, 0.8)
     );
-    padding: 15px;
+    padding: 10px;
     border-radius: var(--border-radius);
     box-shadow: var(--box-shadow);
     max-width: 500px;
-    width: 95%;
-    max-height: 95vh;
+    width: 98%;
+    max-height: 98vh;
     overflow: hidden;
     z-index: 1;
     border: 2px solid rgba(173, 140, 109, 0.6);
@@ -281,7 +281,7 @@ h1::after {
 
 /* Center the game board and make it larger */
 #game-board {
-    width: min(95vmin, 550px);
+    width: min(90vmin, 500px);
     aspect-ratio: 1 / 1;
     background: rgba(143, 182, 127, 0.7);
     background: linear-gradient(
@@ -293,8 +293,8 @@ h1::after {
     display: grid;
     grid-template-columns: repeat(6, 1fr);
     grid-template-rows: repeat(6, 1fr);
-    gap: 1.5%;
-    padding: 1.5%;
+    gap: 1.2%;
+    padding: 1.2%;
     position: relative;
     margin: 0 auto;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
@@ -308,7 +308,7 @@ h1::after {
     width: 100%;
     height: 100%;
     background-color: rgba(255, 255, 255, 0.35);
-    border-radius: var(--border-radius);
+    border-radius: calc(var(--border-radius) * 0.8);
     box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.1);
     box-sizing: border-box;
     position: relative;
@@ -317,21 +317,21 @@ h1::after {
 /* Improve tile styles to be more consistent across devices */
 .tile {
     position: absolute;
-    border-radius: var(--border-radius);
+    border-radius: calc(var(--border-radius) * 0.8);
     font-weight: bold;
-    font-size: min(22px, 6vw);
     display: flex;
     justify-content: center;
     align-items: center;
-    transition: transform 0.2s ease-in-out, 
-                background-color 0.2s ease-in-out, 
-                top 0.2s ease-in-out, 
-                left 0.2s ease-in-out;
+    transition: transform 0.15s ease-in-out, 
+                background-color 0.15s ease-in-out, 
+                top 0.15s ease-in-out, 
+                left 0.15s ease-in-out;
     z-index: 10;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
     text-shadow: 1px 1px 1px rgba(0, 0, 0, 0.15);
     box-sizing: border-box;
     border: 1px solid rgba(255, 255, 255, 0.5);
+    line-height: 1;
 }
 
 /* Base Colors */
@@ -358,47 +358,47 @@ h1::after {
 
 /* Value-specific styles with responsive font sizes and gradients */
 .tile[data-value="2"] { 
-    font-size: min(35px, 7vw); 
+    font-size: min(28px, 6vw); 
     background-image: linear-gradient(135deg, rgba(255,255,255,0.2), transparent);
 }
 .tile[data-value="4"] { 
-    font-size: min(35px, 7vw); 
+    font-size: min(28px, 6vw); 
     background-image: linear-gradient(135deg, rgba(255,255,255,0.2), transparent);
 }
 .tile[data-value="8"] { 
-    font-size: min(35px, 7vw); 
+    font-size: min(28px, 6vw); 
     background-image: linear-gradient(135deg, rgba(255,255,255,0.2), transparent);
 }
 .tile[data-value="16"] { 
-    font-size: min(30px, 6vw); 
+    font-size: min(24px, 5vw); 
     background-image: linear-gradient(135deg, rgba(255,255,255,0.2), transparent);
 }
 .tile[data-value="32"] { 
-    font-size: min(30px, 6vw); 
+    font-size: min(24px, 5vw); 
     background-image: linear-gradient(135deg, rgba(255,255,255,0.2), transparent);
 }
 .tile[data-value="64"] { 
-    font-size: min(30px, 6vw); 
+    font-size: min(24px, 5vw); 
     background-image: linear-gradient(135deg, rgba(255,255,255,0.2), transparent);
 }
 .tile[data-value="128"] { 
-    font-size: min(25px, 5vw); 
+    font-size: min(20px, 4vw); 
     background-image: linear-gradient(135deg, rgba(255,255,255,0.2), transparent);
 }
 .tile[data-value="256"] { 
-    font-size: min(25px, 5vw); 
+    font-size: min(20px, 4vw); 
     background-image: linear-gradient(135deg, rgba(255,255,255,0.2), transparent);
 }
 .tile[data-value="512"] { 
-    font-size: min(25px, 5vw); 
+    font-size: min(20px, 4vw); 
     background-image: linear-gradient(135deg, rgba(255,255,255,0.2), transparent);
 }
 .tile[data-value="1024"] { 
-    font-size: min(20px, 4vw); 
+    font-size: min(16px, 3.5vw); 
     background-image: linear-gradient(135deg, rgba(255,255,255,0.2), transparent);
 }
 .tile[data-value="2048"] { 
-    font-size: min(20px, 4vw); 
+    font-size: min(16px, 3.5vw); 
     background-color: rgba(255, 182, 112, 0.9);
     color: #ffffff; 
     border: 2px solid rgba(255, 154, 21, 0.7);
@@ -496,71 +496,113 @@ h1::after {
 /* Mobile optimizations */
 @media (max-width: 500px) {
     .container {
-        padding: 10px;
-        width: 98%;
+        padding: 8px;
+        width: 100%;
+        max-height: 100%;
+        border-radius: 0;
+        border-left: none;
+        border-right: none;
+    }
+    
+    #game-board {
+        width: 98vmin;
+        gap: 1%;
+        padding: 1%;
+        border-radius: calc(var(--border-radius) * 0.8);
+    }
+    
+    .grid-cell {
+        border-radius: calc(var(--border-radius) * 0.7);
     }
     
     h1 {
-        font-size: 1.5rem;
-        margin-bottom: 3px;
+        font-size: 1.4rem;
+        margin-bottom: 2px;
     }
     
     .score-container, .combo-container, .controls button {
-        padding: 6px 8px;
-        font-size: 14px;
+        padding: 4px 6px;
+        font-size: 13px;
+        margin: 2px;
     }
     
-    .score-container .label, .combo-container .label, .moves-container .label {
-        font-size: 12px;
+    .header {
+        margin-bottom: 5px;
+        gap: 5px;
     }
     
-    .score-container .value, .combo-container .value, .moves-container .value {
-        font-size: 18px;
+    .controls {
+        margin-bottom: 5px;
+        gap: 5px;
     }
     
-    /* Make info and language buttons slightly smaller and closer to edges on small screens */
-    .language-toggle, .info-button {
-        width: 36px;
-        height: 36px;
-        font-size: 14px;
-        top: 10px;
+    .moves-container {
+        margin-bottom: 5px;
+        padding: 4px 8px;
     }
     
-    .language-toggle {
-        left: 10px;
+    /* Adjust tile appearance for small screens */
+    .tile {
+        border-radius: calc(var(--border-radius) * 0.7);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.15);
+        border-width: 1px;
     }
     
-    .info-button {
-        right: 10px;
+    .tile[data-value="2"],
+    .tile[data-value="4"],
+    .tile[data-value="8"] { 
+        font-size: min(24px, 5vw); 
     }
     
-    /* Ensure the modal shows properly on mobile */
-    .modal-content {
-        margin: 15% auto;
-        width: 90%;
-        padding: 15px;
+    .tile[data-value="16"],
+    .tile[data-value="32"],
+    .tile[data-value="64"] { 
+        font-size: min(20px, 4.5vw); 
+    }
+    
+    .tile[data-value="128"],
+    .tile[data-value="256"],
+    .tile[data-value="512"] { 
+        font-size: min(16px, 4vw); 
+    }
+    
+    .tile[data-value="1024"],
+    .tile[data-value="2048"] { 
+        font-size: min(14px, 3.5vw); 
+    }
+    
+    .tile.wildcard,
+    .tile.converter {
+        font-size: min(20px, 4.5vw);
     }
 }
 
-/* Special adjustment for very small screens */
+/* Special adjustments for very small screens */
 @media (max-width: 350px) {
-    .header {
-        flex-direction: column;
-        align-items: center;
+    :root {
+        --border-radius: 8px;
     }
     
-    .score-container, .combo-container {
-        max-width: 80%;
-        margin: 3px auto;
+    #game-board {
+        width: 100vmin;
+        gap: 0.8%;
+        padding: 0.8%;
+    }
+    
+    .grid-cell, .tile {
+        border-radius: calc(var(--border-radius) * 0.6);
     }
     
     h1 {
-        font-size: 1.3rem;
+        font-size: 1.2rem;
     }
     
-    /* Make controls stack on very small screens */
-    .controls {
-        grid-template-columns: 1fr;
+    .score-container .value, .combo-container .value, .moves-container .value {
+        font-size: 16px;
+    }
+    
+    .score-container .label, .combo-container .label, .moves-container .label {
+        font-size: 10px;
     }
 }
 
@@ -570,23 +612,26 @@ h1::after {
         flex-direction: row;
         flex-wrap: wrap;
         justify-content: center;
-        max-height: 98vh;
+        max-height: 100vh;
+        padding: 5px;
     }
     
     .header {
-        width: 25%;
+        width: 22%;
         height: min-content;
         flex-direction: column;
+        margin-right: 5px;
     }
     
     #game-board {
-        width: min(75vh, 550px);
+        width: min(70vh, 500px);
         margin: 0;
     }
     
     .controls {
-        width: 25%;
+        width: 22%;
         height: min-content;
+        margin-left: 5px;
     }
 }
 
