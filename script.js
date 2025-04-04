@@ -27,6 +27,27 @@ document.addEventListener('DOMContentLoaded', () => {
         // RAINBOW: 'rainbow' // Merges with any color/adjacent value (Future)
     };
 
+    // Language functionality
+    let currentLanguage = 'en';
+
+    function toggleLanguage() {
+        // Toggle between languages
+        currentLanguage = currentLanguage === 'en' ? 'zh' : 'en';
+        
+        // Update the button text
+        document.getElementById('language-toggle').textContent = currentLanguage === 'en' ? 'EN' : '中';
+        
+        // Update all text elements
+        const elements = document.querySelectorAll('[data-lang]');
+        elements.forEach(element => {
+            if (element.getAttribute('data-lang') === currentLanguage) {
+                element.style.display = '';
+            } else {
+                element.style.display = 'none';
+            }
+        });
+    }
+
     // --- Initialization ---
     function initBoard() {
         board = Array(gridSize).fill(null).map(() => Array(gridSize).fill(null));
@@ -701,6 +722,9 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => {
             updateBoardVisuals();
         }, 100);
+        
+        // Set up language toggle
+        document.getElementById('language-toggle').addEventListener('click', toggleLanguage);
     }
     
     // Handle window resize to reposition tiles correctly
@@ -735,5 +759,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // Call startGame to initialize everything
     startGame();
 }); 

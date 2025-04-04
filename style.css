@@ -16,25 +16,39 @@
     --box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
 }
 
-body {
-    font-family: 'Quicksand', sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
+/* Base styling */
+* {
+    box-sizing: border-box;
     margin: 0;
-    padding: 20px;
-    touch-action: manipulation; /* Prevent zooming on touch devices */
-    /* Fallback gradient in case image doesn't load */
-    background-color: var(--ghibli-sky);
+    padding: 0;
+    font-family: 'Quicksand', sans-serif;
+    touch-action: manipulation;
+}
+
+html, body {
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+body {
     background-image: url('bg.png');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
     background-attachment: fixed;
-    color: var(--ghibli-dark);
-    position: relative;
-    overflow-x: hidden;
+    color: #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 0;
+    margin: 0;
 }
 
 /* Remove the decorative elements since we're using a real background image */
@@ -63,8 +77,12 @@ html, body {
     overscroll-behavior: none; /* Prevent pull-to-refresh */
 }
 
-/* Update container to be more mobile-friendly */
+/* Make the entire game container centered vertically and horizontally */
 .container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     text-align: center;
     background-color: rgba(255, 255, 255, 0.7);
     padding: 15px;
@@ -72,20 +90,66 @@ html, body {
     box-shadow: var(--box-shadow);
     max-width: 500px;
     width: calc(100% - 30px);
+    max-height: 95vh;
+    overflow: hidden;
     backdrop-filter: blur(2px);
-    position: relative;
     z-index: 1;
     border: 2px solid rgba(173, 140, 109, 0.6);
-    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
 }
 
-/* Adjust the header for better mobile view */
+/* Language selector button - moved to top left for better visibility */
+.language-toggle {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    background-color: rgba(93, 138, 104, 0.8);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    box-shadow: 0 3px 7px rgba(0, 0, 0, 0.1);
+    z-index: 100;
+    font-size: 16px;
+}
+
+/* Info button styling - improved positioning */
+.info-button {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: rgba(173, 140, 109, 0.8);
+    color: white;
+    font-size: 20px;
+    cursor: pointer;
+    box-shadow: var(--box-shadow);
+    z-index: 100;
+}
+
+/* Fix header layout for better alignment */
 .header {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 15px;
     flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 10px;
+    position: relative;
+    width: 100%;
 }
 
 h1 {
@@ -109,6 +173,7 @@ h1::after {
     border-radius: 3px;
 }
 
+/* Make sure score and combo display properly */
 .score-container, .combo-container {
     background-color: rgba(249, 242, 227, 0.7);
     padding: 12px 15px;
@@ -124,6 +189,7 @@ h1::after {
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
 }
 
 .score-container:hover, .combo-container:hover {
@@ -140,6 +206,9 @@ h1::after {
 .score-container .value, .combo-container .value, .moves-container .value {
     font-size: 22px;
     font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 /* Update controls section for better layout */
@@ -180,30 +249,7 @@ h1::after {
     font-size: 14px;
 }
 
-/* Info button styling */
-.info-button {
-    position: absolute;
-    top: 0;
-    right: -45px;
-    width: 40px;
-    height: 40px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: var(--ghibli-soil);
-    color: white;
-    font-size: 20px;
-    cursor: pointer;
-    box-shadow: var(--box-shadow);
-}
-
-.info-button:hover {
-    background-color: var(--ghibli-forest);
-    transform: scale(1.1);
-}
-
-/* Make game board responsive and ensure perfect alignment */
+/* Center the game board more specifically */
 #game-board {
     width: 100%;
     aspect-ratio: 1 / 1;
@@ -215,11 +261,14 @@ h1::after {
     gap: 2%;
     padding: 2%;
     position: relative;
-    margin: 0 auto;
+    margin: 15px auto;
     box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
     border: 2px solid rgba(173, 140, 109, 0.5);
     backdrop-filter: blur(1px);
     box-sizing: border-box;
+    max-width: min(90vw, 90vh, 400px);
+    flex-grow: 0;
+    align-self: center;
 }
 
 .grid-cell {
@@ -761,4 +810,16 @@ body::after {
 @keyframes float-gentle {
     0%, 100% { transform: translateY(0) rotate(0); }
     50% { transform: translateY(-5px) rotate(0.5deg); }
+}
+
+.language-toggle:hover {
+    background-color: rgba(173, 140, 109, 0.8);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+}
+
+.info-button:hover {
+    background-color: rgba(93, 138, 104, 0.8);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
 } 

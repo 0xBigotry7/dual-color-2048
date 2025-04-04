@@ -17,28 +17,39 @@
     <div class="dust-sprite"></div>
     <div class="dust-sprite"></div>
     
+    <!-- Language toggle button -->
+    <button id="language-toggle" class="language-toggle">EN</button>
+    
+    <!-- Info button moved outside container for better placement -->
+    <button id="info-btn" class="info-button">
+        <i class="fas fa-info-circle"></i>
+    </button>
+    
     <div class="container">
         <div class="header">
-            <h1>Ghibli Dual Color 2048</h1>
+            <h1><span data-lang="en">Ghibli Dual Color 2048</span><span data-lang="zh" style="display:none;">吉卜力双色2048</span></h1>
             <div class="score-container">
-                <div class="label">Score</div>
+                <div class="label"><span data-lang="en">Score</span><span data-lang="zh" style="display:none;">分数</span></div>
                 <div class="value"><span id="score">0</span></div>
             </div>
             <div class="combo-container">
-                <div class="label">Combo</div>
+                <div class="label"><span data-lang="en">Combo</span><span data-lang="zh" style="display:none;">连击</span></div>
                 <div class="value"><span id="combo-multiplier">1</span>x</div>
             </div>
         </div>
         
         <div class="controls">
             <p class="moves-container">
-                <span class="label">Color Changes</span>
+                <span class="label"><span data-lang="en">Color Changes</span><span data-lang="zh" style="display:none;">颜色变换</span></span>
                 <span class="value" id="moves-left">5</span>
             </p>
-            <button id="change-row-btn">Change Row Color</button>
-            <button id="change-col-btn">Change Col Color</button>
-            <button id="info-btn" class="info-button">
-                <i class="fas fa-info-circle"></i>
+            <button id="change-row-btn">
+                <span data-lang="en">Change Row</span>
+                <span data-lang="zh" style="display:none;">改变行</span>
+            </button>
+            <button id="change-col-btn">
+                <span data-lang="en">Change Col</span>
+                <span data-lang="zh" style="display:none;">改变列</span>
             </button>
         </div>
         
@@ -49,19 +60,22 @@
         <div id="instructions-modal" class="modal">
             <div class="modal-content">
                 <span class="close-button">&times;</span>
-                <h2>How to Play</h2>
-                <p>Swipe or use arrow keys to move tiles. Match same-colored tiles to merge them!</p>
-                <p><span class="emoji">★</span> = Wildcard (merges with any color)</p>
-                <p><span class="emoji">◎</span> = Converter (changes adjacent colors)</p>
-                <p>When tiles with values of 32 or 256 are created, they change color!</p>
-                <p>Use color change buttons to flip colors of rows or columns (limited uses).</p>
+                <h2><span data-lang="en">How to Play</span><span data-lang="zh" style="display:none;">游戏规则</span></h2>
+                <p><span data-lang="en">Swipe or use arrow keys to move tiles. Match same-colored tiles to merge them!</span><span data-lang="zh" style="display:none;">滑动或使用方向键移动方块。合并相同颜色的方块！</span></p>
+                <p><span data-lang="en"><span class="emoji">★</span> = Wildcard (merges with any color)</span><span data-lang="zh" style="display:none;"><span class="emoji">★</span> = 百搭（与任何颜色合并）</span></p>
+                <p><span data-lang="en"><span class="emoji">◎</span> = Converter (changes adjacent colors)</span><span data-lang="zh" style="display:none;"><span class="emoji">◎</span> = 转换器（改变相邻颜色）</span></p>
+                <p><span data-lang="en">When tiles with values of 32 or 256 are created, they change color!</span><span data-lang="zh" style="display:none;">当创建值为32或256的方块时，它们会改变颜色！</span></p>
+                <p><span data-lang="en">Use color change buttons to flip colors of rows or columns (limited uses).</span><span data-lang="zh" style="display:none;">使用颜色更改按钮翻转行或列的颜色（使用次数有限）。</span></p>
             </div>
         </div>
          
         <div id="game-over-message" style="display: none;">
-            <h2>Game Over!</h2>
-            <p>Final Score: <span id="final-score">0</span></p>
-            <button id="restart-button">Play Again</button>
+            <h2><span data-lang="en">Game Over!</span><span data-lang="zh" style="display:none;">游戏结束！</span></h2>
+            <p><span data-lang="en">Final Score:</span><span data-lang="zh" style="display:none;">最终得分：</span> <span id="final-score">0</span></p>
+            <button id="restart-button">
+                <span data-lang="en">Play Again</span>
+                <span data-lang="zh" style="display:none;">再来一次</span>
+            </button>
         </div>
     </div>
 
