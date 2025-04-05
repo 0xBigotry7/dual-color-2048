@@ -2,86 +2,89 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, maximum-scale=1.0">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#a5d8ff">
-    <title>Studio Ghibli Dual Color 2048</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dual-Color 2048 (6x6)</title>
     <link rel="stylesheet" href="style.css">
 </head>
-<body ontouchstart="">
-    <!-- Add dust sprites for Ghibli atmosphere -->
-    <div class="dust-sprite"></div>
-    <div class="dust-sprite"></div>
-    <div class="dust-sprite"></div>
-    <div class="dust-sprite"></div>
-    
-    <!-- Language toggle button -->
-    <button id="language-toggle" class="language-toggle">EN</button>
-    
-    <!-- Info button moved outside container for better placement -->
-    <button id="info-btn" class="info-button">
-        <i class="fas fa-info-circle"></i>
-    </button>
-    
-    <div class="container">
-        <div class="header">
-            <h1><span data-lang="en">Ghibli Dual Color 2048</span><span data-lang="zh" style="display:none;">吉卜力双色2048</span></h1>
-            <div class="score-container">
-                <div class="label"><span data-lang="en">Score</span><span data-lang="zh" style="display:none;">分数</span></div>
-                <div class="value"><span id="score">0</span></div>
+<body>
+    <div class="game-container">
+        <header>
+            <h1 data-i18n="title">Dual-Color 2048 (6x6)</h1>
+            <div class="header-buttons">
+                <button id="new-game-button" data-i18n="new-game">New Game</button>
+                <button id="instructions-button">?</button>
+                <button id="language-toggle">中文</button>
             </div>
-            <div class="combo-container">
-                <div class="label"><span data-lang="en">Combo</span><span data-lang="zh" style="display:none;">连击</span></div>
-                <div class="value"><span id="combo-multiplier">1</span><span>x</span></div>
+        </header>
+        
+        <div class="game-info">
+            <div class="info-item">
+                <div class="info-label" data-i18n="score">Score</div>
+                <div id="score-value" class="info-value">0</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label" data-i18n="combo">Combo</div>
+                <div id="combo-value" class="info-value">1x</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label" data-i18n="color-changes">Color Changes</div>
+                <div id="color-changes-value" class="info-value">5</div>
             </div>
         </div>
         
-        <div class="controls">
-            <p class="moves-container">
-                <span class="label"><span data-lang="en">Color Changes</span><span data-lang="zh" style="display:none;">颜色变换</span></span>
-                <span class="value" id="moves-left">5</span>
-            </p>
-            <button id="change-row-btn">
-                <span data-lang="en">Change Row</span>
-                <span data-lang="zh" style="display:none;">改变行</span>
-            </button>
-            <button id="change-col-btn">
-                <span data-lang="en">Change Col</span>
-                <span data-lang="zh" style="display:none;">改变列</span>
-            </button>
-        </div>
-        
-        <div id="game-board">
-            <!-- Tiles will be generated here by JavaScript -->
-        </div>
-        
-        <div id="instructions-modal" class="modal">
-            <div class="modal-content">
-                <span class="close-button">&times;</span>
-                <h2><span data-lang="en">How to Play</span><span data-lang="zh" style="display:none;">游戏规则</span></h2>
-                <p><span data-lang="en">Swipe or use arrow keys to move tiles. Match same-colored tiles to merge them!</span><span data-lang="zh" style="display:none;">滑动或使用方向键移动方块。合并相同颜色的方块！</span></p>
-                <p><span data-lang="en"><span class="emoji">★</span> = Wildcard (merges with any color)</span><span data-lang="zh" style="display:none;"><span class="emoji">★</span> = 百搭（与任何颜色合并）</span></p>
-                <p><span data-lang="en"><span class="emoji">◎</span> = Converter (changes adjacent colors)</span><span data-lang="zh" style="display:none;"><span class="emoji">◎</span> = 转换器（改变相邻颜色）</span></p>
-                <p><span data-lang="en">When tiles with values of 32 or 256 are created, they change color!</span><span data-lang="zh" style="display:none;">当创建值为32或256的方块时，它们会改变颜色！</span></p>
-                <p><span data-lang="en">Use color change buttons to flip colors of rows (1-6) or columns (1-6). Limited uses!</span><span data-lang="zh" style="display:none;">使用颜色更改按钮翻转行（1-6）或列（1-6）的颜色。使用次数有限！</span></p>
+        <div class="board-container">
+            <div class="column-labels">
+                <button id="col-1" class="column-label">1</button>
+                <button id="col-2" class="column-label">2</button>
+                <button id="col-3" class="column-label">3</button>
+                <button id="col-4" class="column-label">4</button>
+                <button id="col-5" class="column-label">5</button>
+                <button id="col-6" class="column-label">6</button>
             </div>
-        </div>
-         
-        <div id="game-over-message" style="display: none;">
-            <h2><span data-lang="en">Game Over!</span><span data-lang="zh" style="display:none;">游戏结束！</span></h2>
-            <p><span data-lang="en">Final Score:</span><span data-lang="zh" style="display:none;">最终得分：</span> <span id="final-score">0</span></p>
-            <button id="restart-button">
-                <span data-lang="en">Play Again</span>
-                <span data-lang="zh" style="display:none;">再来一次</span>
-            </button>
+            
+            <div class="row-column-container">
+                <div class="row-labels">
+                    <button id="row-1" class="row-label">1</button>
+                    <button id="row-2" class="row-label">2</button>
+                    <button id="row-3" class="row-label">3</button>
+                    <button id="row-4" class="row-label">4</button>
+                    <button id="row-5" class="row-label">5</button>
+                    <button id="row-6" class="row-label">6</button>
+                </div>
+                
+                <div id="game-board" class="game-board"></div>
+            </div>
         </div>
     </div>
-
-    <script src="script.js"></script>
+    
+    <div id="instructions-modal" class="modal hidden">
+        <div class="modal-content">
+            <h2 data-i18n="instructions-title">How to Play</h2>
+            <ul>
+                <li data-i18n="instructions-1">Use arrow keys or swipe to move tiles.</li>
+                <li data-i18n="instructions-2">Merge same-value, same-color tiles to create larger values.</li>
+                <li data-i18n="instructions-3">Special red-blue wildcards can merge with any color of the same value.</li>
+                <li data-i18n="instructions-4">Special converter tiles (⟳) will flip the color of adjacent tiles when merged.</li>
+                <li data-i18n="instructions-5">Click row/column numbers or press number keys (hold Shift for columns) to change tile colors.</li>
+                <li data-i18n="instructions-6">Tiles 32 and 256 change color when created!</li>
+            </ul>
+            <button id="close-instructions" data-i18n="close">Close</button>
+        </div>
+    </div>
+    
+    <div id="game-over-modal" class="modal hidden">
+        <div class="modal-content">
+            <h2 data-i18n="game-over">Game Over!</h2>
+            <div class="final-score-container">
+                <span data-i18n="final-score">Final Score</span>: <span id="final-score">0</span>
+            </div>
+            <button id="try-again-button" data-i18n="try-again">Try Again</button>
+        </div>
+    </div>
+    
+    <div id="toast" class="toast"></div>
+    
+    <!-- Load modular JavaScript files -->
+    <script type="module" src="js/game.js"></script>
 </body>
 </html> 
