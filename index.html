@@ -3,7 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Dual-Color 2048 - A challenging puzzle game with colored tiles">
+    <meta name="theme-color" content="#6a11cb">
     <title>Dual-Color 2048 (6x6)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -12,7 +18,7 @@
             <h1 data-i18n="title">Dual-Color 2048 (6x6)</h1>
             <div class="header-buttons">
                 <button id="new-game-button" data-i18n="new-game">New Game</button>
-                <button id="instructions-button">?</button>
+                <button id="instructions-button"><i class="fas fa-question"></i></button>
                 <button id="language-toggle">中文</button>
             </div>
         </header>
@@ -55,6 +61,10 @@
                 <div id="game-board" class="game-board"></div>
             </div>
         </div>
+        
+        <footer>
+            <p class="footer-text">Swipe or use arrow keys to move. Match same-color tiles to merge.</p>
+        </footer>
     </div>
     
     <div id="instructions-modal" class="modal hidden">
