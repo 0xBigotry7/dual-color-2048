@@ -165,11 +165,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     function positionTile(tileElement, row, col) {
-        // Use percentage-based positioning for stability
-        tileElement.style.top = `${row * (100 / GRID_SIZE)}%`;
-        tileElement.style.left = `${col * (100 / GRID_SIZE)}%`;
-        tileElement.style.width = `${(100 / GRID_SIZE) * 0.9}%`;
-        tileElement.style.height = `${(100 / GRID_SIZE) * 0.9}%`;
+        // Use fixed percentage-based positioning for absolute stability
+        const cellWidth = 100 / GRID_SIZE;
+        
+        // Position using exact percentages without any calculations that could cause rounding errors
+        tileElement.style.top = `${row * cellWidth}%`;
+        tileElement.style.left = `${col * cellWidth}%`;
+        
+        // Size with a consistent percentage that doesn't change
+        const tileSize = 0.9 * cellWidth;
+        tileElement.style.width = `${tileSize}%`;
+        tileElement.style.height = `${tileSize}%`;
         
         // Adaptive font sizing based on tile value
         updateTileFontSize(tileElement);
